@@ -260,11 +260,12 @@ function init() {
                 bullet.velocity.y * 10,
                 bullet.velocity.z * 10
             )
-            // smoke.rotation.x = Math.PI
+            // smoke.rotation.x -= Math.PI / 2;
+            smoke.rotation.z -= Math.floor((Math.random() * 10) + 1)
             setInterval(() => {
                 camera.remove(smoke)
 
-            }, 10200)
+            }, 200)
             setInterval(() => {
                 allow_shot = true
             }, 400)
