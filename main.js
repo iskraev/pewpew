@@ -14,6 +14,11 @@ from './examples/jsm/loaders/OBJLoader.js';
 
 let scene, camera, renderer, cube, controls, ambientLight
 
+let smoke
+
+let shotAudio = new Audio('./shot.wav')
+// let reload = new Audio('./reload.wav')
+let empty = new Audio('./empty.wav')
 
 
 var raycaster;
@@ -30,8 +35,8 @@ var direction = new THREE.Vector3();
 var vertex = new THREE.Vector3();
 var color = new THREE.Color();
 let meshFloor;
-// var clock = new THREE.Clock();
-
+var clock = new THREE.Clock();
+let ammo = 15;
 
 let loadingManager = null;
 let RESOURCES_LOADED = false;
@@ -46,11 +51,15 @@ const models = {
 
 }
 
+const bullets = [];
+
 const objects = {};
 
 
 //main initiazlie function
 function init() {
+    //set ammo count to the html element
+    document.getElementById('ammo').innerHTML = ammo;
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(
@@ -61,6 +70,7 @@ function init() {
     );
     //camera position
     camera.position.set(10, 10, -5)
+    // camera.lookAt(new THREE.Vector3(0, 10, 0));
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
@@ -76,16 +86,23 @@ function init() {
 
 
 
+    var reticle = new THREE.Mesh(
+        new THREE.RingBufferGeometry( 0.09, 0.14 , 32),
+        new THREE.MeshBasicMaterial( {color: 0xffffff, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })
+    );
+    reticle.position.z = -8;
+    reticle.applyQuaternion(camera.quaternion)
+    camera.add(reticle);
     
 
-    for (var _key in models) {
+    for (let _key in models) {
         (function (key) {
 
-            var mtlLoader = new MTLLoader(loadingManager);
+            let mtlLoader = new MTLLoader(loadingManager);
             mtlLoader.load(models[key].mtl, function (materials) {
                 materials.preload();
 
-                var objLoader = new OBJLoader(loadingManager);
+                let objLoader = new OBJLoader(loadingManager);
 
                 objLoader.setMaterials(materials);
                 objLoader.load(models[key].obj, function (mesh) {
@@ -121,6 +138,31 @@ function init() {
             wireframe: false
         })
     )
+
+    const smokeParticle = new THREE.TextureLoader().load('fire_01.png')
+    // /smokeParticle.alphaMap(0)
+    const smokeMesh = new THREE.MeshBasicMaterial({
+        map: smokeParticle,
+        wireframe: false,
+        transparent: true,
+        opacity: 1
+    })
+    // smokeMesh.alphaMap = "white";
+
+    smoke = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 10, 10, 10),
+        smokeMesh
+    )
+
+    smoke.position.set(
+        camera.position.x - 8,
+        camera.position.y - 10,
+        camera.position.z - 10
+    )
+    smoke.scale.x = 3
+    smoke.scale.y = 3
+
+  
 
 
 
@@ -184,8 +226,72 @@ function init() {
 
     controls = new PointerLockControls(camera, renderer.domElement);
 
+
+    let allow_shot = true;
     document.addEventListener('click', () => {
         controls.lock();
+        if(ammo > 0 && allow_shot){
+            shotAudio.pause();
+            shotAudio.currentTime = 0;
+            shotAudio.play()
+            ammo -= 1;
+            let ammoCount = document.getElementById('ammo')
+            ammoCount.innerHTML = ammo
+            let bullet = new THREE.Mesh(
+                new THREE.SphereGeometry(0.5, 7, 7),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffffff
+                })
+            )
+            var time = performance.now();
+
+            bullet.position.set(
+                camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.6,
+                camera.position.y,
+                camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.6
+                // + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75
+            )
+
+         
+            bullet.velocity = new THREE.Vector3(0, 0, -1)
+            bullet.velocity.applyQuaternion(camera.quaternion);
+            bullet.velocity.set(
+                bullet.velocity.x * 10,
+                bullet.velocity.y * 10,
+                bullet.velocity.z * 10
+            )
+            // smoke.rotation.x = Math.PI
+            setInterval(() => {
+                camera.remove(smoke)
+
+            }, 10200)
+            setInterval(() => {
+                allow_shot = true
+            }, 400)
+
+            bullet.alive = true;
+            setTimeout(function () {
+                bullet.alive = false;
+
+                 
+
+                scene.remove(bullet)
+            }, 1000)
+            bullets.push(bullet);
+            scene.add(bullet)
+
+
+            camera.add(smoke)
+            allow_shot = false
+           
+        }else{
+            empty.pause();
+            empty.currentTime = 0;
+            empty.play()
+
+        }
+
+        
     })
 
     controls.addEventListener('lock', function () {
@@ -269,12 +375,6 @@ function init() {
     document.addEventListener('keyup', onKeyUp, false);
 
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
-    // controls.movementSpeed = 4;
-    // controls.lookSpeed = 0.5;
-    // controls.lookVertical = true;
-    // controls.constrainVertical = false;
-    // controls.verticalMin = 1.1;
-    // controls.verticalMax = 2.2;
 
     animate();
 
@@ -284,7 +384,6 @@ function init() {
 
 function onResourcesLoaded() {
     objects['gun'] = models.gun.mesh
-
     objects['gun'].position.set(3, -3, -6);
     objects['gun'].rotation.set(Math.PI, 0, Math.PI);
     objects['gun'].scale.set(100, 100, 100);
@@ -334,6 +433,8 @@ function animate() {
             objects["gun"].position.z
         );
 
+        
+
         if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
         if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
 
@@ -357,12 +458,15 @@ function animate() {
             canJump = true;
 
         }
-       
-        // objects["gun"].position.set(
-        //     camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 10,
-        //     camera.position.y,
-        //     camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 10
-        // );
+
+        for (let i = 0; i < bullets.length; i += 1) {
+            if (bullets[i] === undefined) continue;
+            if (bullets[i].alive == false) {
+                bullets.splice(i, 1);
+                continue;
+            }
+            bullets[i].position.add(bullets[i].velocity);
+        }
         
 
         prevTime = time;
@@ -403,3 +507,10 @@ function onWindowResize() {
 window.addEventListener('resize', onWindowResize, false)
 
 window.onload = init;
+
+
+
+
+
+
+//////
