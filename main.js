@@ -10,8 +10,14 @@ import {
 }
 from './examples/jsm/loaders/OBJLoader.js';
 
-
-
+import {
+    Sky
+}
+from './examples/jsm/objects/Sky.js';
+import {
+    GUI
+}
+from './examples/jsm/libs/dat.gui.module.js';
 let scene, camera, renderer, cube, controls, ambientLight
 
 let smoke
@@ -20,9 +26,19 @@ let reload = true;
 let shotAudio = new Audio('./shot.wav')
 let reloadAudio = new Audio('./reload.wav')
 let empty = new Audio('./empty.wav')
+let targetHit = new Audio('reload.wav')
+
+
+
+
+
+
 
 
 var raycaster;
+
+
+let collidableMeshList = []
 
 var moveForward = false;
 var moveBackward = false;
@@ -84,6 +100,134 @@ function init() {
 
         onResourcesLoaded();
     }
+
+
+
+
+
+
+
+
+    //set up sky
+
+    let sky = new Sky();
+    sky.scale.setScalar(450000);
+    scene.add(sky);
+
+    // Add Sun Helper
+    let sunSphere = new THREE.Mesh(
+        new THREE.SphereBufferGeometry(20000, 16, 8),
+        new THREE.MeshBasicMaterial({
+            color: 0xffffff
+        })
+    );
+    sunSphere.position.y = -700000;
+    sunSphere.visible = false;
+    scene.add(sunSphere);
+
+    /// GUI
+
+    var effectController = {
+        turbidity: 10,
+        rayleigh: 2,
+        mieCoefficient: 0.005,
+        mieDirectionalG: 0.8,
+        luminance: 1,
+        inclination: 0.49, // elevation / inclination
+        azimuth: 0.25, // Facing front,
+        sun: !true
+    };
+
+    var distance = 400000;
+
+    var uniforms = sky.material.uniforms;
+    uniforms["turbidity"].value = 10;
+    uniforms["rayleigh"].value = 2;
+    uniforms["mieCoefficient"].value = 0.005;
+    uniforms["mieDirectionalG"].value = 0.8;
+    uniforms["luminance"].value = 1;
+    var theta = Math.PI * (0.1 - 0.5);
+    var phi = 2 * Math.PI * (0.25 - 0.5);
+
+    sunSphere.position.x = distance * Math.cos(phi);
+    sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
+    sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
+    uniforms["sunPosition"].value.copy(sunSphere.position);
+    sunSphere.visible = effectController.sun;
+
+
+    // function guiChanged() {
+
+    //     var uniforms = sky.material.uniforms;
+    //     uniforms["turbidity"].value = effectController.turbidity;
+    //     uniforms["rayleigh"].value = effectController.rayleigh;
+    //     uniforms["mieCoefficient"].value = effectController.mieCoefficient;
+    //     uniforms["mieDirectionalG"].value = effectController.mieDirectionalG;
+    //     uniforms["luminance"].value = effectController.luminance;
+
+    //     var theta = Math.PI * (effectController.inclination - 0.5);
+    //     var phi = 2 * Math.PI * (effectController.azimuth - 0.5);
+
+    //     sunSphere.position.x = distance * Math.cos(phi);
+    //     sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
+    //     sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
+
+    //     sunSphere.visible = effectController.sun;
+
+    //     uniforms["sunPosition"].value.copy(sunSphere.position);
+
+    //     renderer.render(scene, camera);
+
+    // }
+
+    // var gui = new GUI();
+
+    // gui.add(effectController, "turbidity", 1.0, 20.0, 0.1).onChange(guiChanged);
+    // gui.add(effectController, "rayleigh", 0.0, 4, 0.001).onChange(guiChanged);
+    // gui.add(effectController, "mieCoefficient", 0.0, 0.1, 0.001).onChange(guiChanged);
+    // gui.add(effectController, "mieDirectionalG", 0.0, 1, 0.001).onChange(guiChanged);
+    // gui.add(effectController, "luminance", 0.0, 2).onChange(guiChanged);
+    // gui.add(effectController, "inclination", 0, 1, 0.0001).onChange(guiChanged);
+    // gui.add(effectController, "azimuth", 0, 1, 0.0001).onChange(guiChanged);
+    // gui.add(effectController, "sun").onChange(guiChanged);
+
+    // guiChanged();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -164,6 +308,20 @@ function init() {
     smoke.scale.y = 1.5
 
   
+    const target = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        wireframe: false,
+    })
+
+    let targetMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(10, 10, 10, 10),
+        smokeMesh
+    )
+
+
+    targetMesh.position.set(0,50,0);
+    scene.add(targetMesh)
+    collidableMeshList.push(targetMesh)
 
 
 
@@ -174,6 +332,7 @@ function init() {
             floorPart.position.set(i * 10, 0, j * 10)
             floorPart.rotation.x -= Math.PI / 2;
             floorPart.rotation.z -= Math.PI * Math.floor((Math.random() * 4) + 1)
+            collidableMeshList.push(floorPart)
             scene.add(floorPart)
 
 
@@ -351,7 +510,7 @@ function init() {
                 break;
             case 82:
                 if (reload === true){
-                    allowShot = false;
+                    
                     reload = false;
                     ammo = 15;
                     reloadAudio.play()
@@ -360,8 +519,9 @@ function init() {
                    
                     let reloadingBar = document.getElementById('reloading-bar')
                     let reloadingAnimation = setInterval(()=>{
+                        allowShot = false;
                         reloadingBar.style.width = `${(reloadAudio.currentTime / reloadAudio.duration) * 100}%`
-                    }, 1)
+                    }, 20)
                     reloadAudio.onended = () => {
                         clearInterval(reloadingAnimation)
                         allowShot = true;
@@ -413,7 +573,7 @@ function init() {
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 
-    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    // raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
 
     animate();
 
@@ -447,12 +607,12 @@ function animate() {
 
     if (controls.isLocked === true) {
 
-        raycaster.ray.origin.copy(controls.getObject().position);
-        raycaster.ray.origin.y -= 10;
+        // raycaster.ray.origin.copy(controls.getObject().position);
+        // raycaster.ray.origin.y -= 10;
 
-        var intersections = raycaster.intersectObjects(objects);
+        // var intersections = raycaster.intersectObjects(objects);
 
-        var onObject = intersections.length > 0;
+        // var onObject = intersections.length > 0;
 
         var time = performance.now();
         var delta = (time - prevTime) / 1000;
@@ -494,12 +654,12 @@ function animate() {
         if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
         if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
 
-        if (onObject === true) {
+        // if (onObject === true) {
 
-            velocity.y = Math.max(0, velocity.y);
-            canJump = true;
+        //     velocity.y = Math.max(0, velocity.y);
+        //     canJump = true;
 
-        }
+        // }
 
         controls.moveRight(-velocity.x * delta);
         controls.moveForward(-velocity.z * delta);
@@ -521,6 +681,7 @@ function animate() {
                 bullets.splice(i, 1);
                 continue;
             }
+            collision(bullets[i])
             bullets[i].position.add(bullets[i].velocity);
         }
         
@@ -531,17 +692,20 @@ function animate() {
 
 
     render();
-    // }
+}
 
-
-
-
-
-
-
-
-
-
+function collision(bullet) {
+    var originPoint = bullet.position.clone();
+    for (var vertexIndex = 0; vertexIndex < bullet.geometry.vertices.length; vertexIndex++) {
+        var ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
+        var collisionResults = ray.intersectObjects(collidableMeshList);
+        if (collisionResults.length > 0) {
+            console.log('hit')
+            targetHit.play();
+            bullet.alive = false;
+            break;
+        }
+    }
 }
 
 function render() {
