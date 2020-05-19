@@ -15,9 +15,10 @@ from './examples/jsm/loaders/OBJLoader.js';
 let scene, camera, renderer, cube, controls, ambientLight
 
 let smoke
+let reload = true;
 
 let shotAudio = new Audio('./shot.wav')
-// let reload = new Audio('./reload.wav')
+let reloadAudio = new Audio('./reload.wav')
 let empty = new Audio('./empty.wav')
 
 
@@ -157,10 +158,10 @@ function init() {
     smoke.position.set(
         camera.position.x - 8,
         camera.position.y - 10,
-        camera.position.z - 10
+        camera.position.z - 3
     )
-    smoke.scale.x = 3
-    smoke.scale.y = 3
+    smoke.scale.x = 1.5
+    smoke.scale.y = 1.5
 
   
 
@@ -227,10 +228,10 @@ function init() {
     controls = new PointerLockControls(camera, renderer.domElement);
 
 
-    let allow_shot = true;
+    let allowShot = true;
     document.addEventListener('click', () => {
         controls.lock();
-        if(ammo > 0 && allow_shot){
+        if(ammo > 0 && allowShot){
             shotAudio.pause();
             shotAudio.currentTime = 0;
             shotAudio.play()
@@ -260,22 +261,29 @@ function init() {
                 bullet.velocity.y * 10,
                 bullet.velocity.z * 10
             )
-            // smoke.rotation.x -= Math.PI / 2;
-            smoke.rotation.z -= Math.floor((Math.random() * 10) + 1)
-            setInterval(() => {
-                camera.remove(smoke)
+            smoke.rotation.z -= Math.floor((Math.random() * 10) + 1);
+            smoke.position.y = Math.sin(time / 5000 * Math.PI - 1) - 1;
 
+            let recoil = setInterval(()=>{
+                objects['gun'].rotation.x += 0.02;
+            },1)
+            
+            setTimeout(() => {
+                objects['gun'].rotation.set(Math.PI, 0, Math.PI);
+                clearInterval(recoil);
             }, 200)
-            setInterval(() => {
-                allow_shot = true
-            }, 400)
+            
+            setTimeout(() => {
+                camera.remove(smoke)
+            }, 100)
+            
+            setTimeout(() => {
+                allowShot = true
+            }, 200)
 
             bullet.alive = true;
             setTimeout(function () {
                 bullet.alive = false;
-
-                 
-
                 scene.remove(bullet)
             }, 1000)
             bullets.push(bullet);
@@ -283,12 +291,14 @@ function init() {
 
 
             camera.add(smoke)
-            allow_shot = false
+            allowShot = false
            
         }else{
-            empty.pause();
-            empty.currentTime = 0;
-            empty.play()
+            if(reload){
+                empty.pause();
+                empty.currentTime = 0;
+                empty.play()
+            }
 
         }
 
@@ -338,6 +348,34 @@ function init() {
             case 32: // space
                 if (canJump === true) velocity.y += 200;
                 canJump = false;
+                break;
+            case 82:
+                if (reload === true){
+                    allowShot = false;
+                    reload = false;
+                    ammo = 15;
+                    reloadAudio.play()
+                    document.getElementsByClassName('ammo-box')[2].classList.add('active-ammo')
+                    document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
+                   
+                    let reloadingBar = document.getElementById('reloading-bar')
+                    let reloadingAnimation = setInterval(()=>{
+                        reloadingBar.style.width = `${(reloadAudio.currentTime / reloadAudio.duration) * 100}%`
+                    }, 1)
+                    reloadAudio.onended = () => {
+                        clearInterval(reloadingAnimation)
+                        allowShot = true;
+                        reload = true;
+                        let ammoCount = document.getElementById('ammo')
+                        ammoCount.innerHTML = ammo
+                        document.getElementsByClassName('ammo-box')[2].classList.remove('active-ammo')
+                        document.getElementsByClassName('ammo-box')[0].classList.add('active-ammo')
+                        document.getElementsByClassName('ammo-box')[1].classList.remove('active-ammo')
+                    }
+
+                }
+                
+
                 break;
 
         }
@@ -430,11 +468,28 @@ function animate() {
 
         objects["gun"].position.set(
             objects["gun"].position.x,
-            Math.sin(time / 5000 * Math.PI - 1) - 3,
+            Math.sin(time / 5000 * Math.PI - 1) - 4,
             objects["gun"].position.z
         );
 
-        
+        //reload animation
+
+
+        if(ammo === 0){
+            document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
+            document.getElementsByClassName('ammo-box')[1].classList.add('active-ammo')
+
+        }
+
+
+
+
+
+
+
+
+
+
 
         if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
         if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;

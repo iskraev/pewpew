@@ -3,15 +3,17 @@ body{
     cursive;
 }
 .ammo-box{
-
+    display: none;
     position: absolute;
     justify-content: space-evenly;
+    align-items: center;
     background-color: aqua;
     bottom: 60px;
     left: 100px;
-    display: flex;
+    /* display: flex; */
     font-size: 2rem;
-    padding: 20px 0;
+    /* padding: 20px 0; */
+    height: 100px;
     width: 200px;
     border: 2px solid rgb(255, 45, 45);
     color: white;
@@ -19,6 +21,27 @@ body{
     border-radius: 10px;
 }
 
+
 .ammo-box img{
     height: 40px;
+}
+
+.active-ammo{
+    display: flex;
+}
+.reload-box{
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+#reloading-animation{
+    background-color: white;
+    width: 80%;
+    height: 20px;
+}
+
+#reloading-bar{
+    height: 100%;
+    /* width: 100%; */
+    background-color: rgb(0, 255, 0);
 }
