@@ -176,7 +176,7 @@ const bullets = [];
 const objects = {};
 
 
-
+let targetsLeft = 5
 //main initiazlie function
 function init() {
 
@@ -198,8 +198,11 @@ function init() {
     camera.rotation.set(0, 10, 0)
     // camera.lookAt(new THREE.Vector3(0, 10, 0));
     renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 
 
@@ -208,6 +211,7 @@ function init() {
         RESOURCES_LOADED = true;
 
         onResourcesLoaded();
+        console.log(scene)
     }
 
 
@@ -221,6 +225,8 @@ function init() {
 
     let sky = new Sky();
     sky.scale.setScalar(450000);
+    sky.castShadow = true;
+    sky.receiveShadow = true;
     scene.add(sky);
 
     // Add Sun Helper
@@ -315,16 +321,8 @@ function init() {
 
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-    const textureFloor = new THREE.TextureLoader().load('./stone.jpg')
-    let floor = new THREE.Mesh(
-        new THREE.BoxGeometry(10, 10, 10, 10),
-        new THREE.MeshBasicMaterial({
-            map: textureFloor,
-            wireframe: false
-        })
-    )
-
-
+    
+    
     const smokeParticle = new THREE.TextureLoader().load('fire_01.png')
     // /smokeParticle.alphaMap(0)
     const smokeMesh = new THREE.MeshBasicMaterial({
@@ -334,60 +332,92 @@ function init() {
         opacity: 1
     })
     // smokeMesh.alphaMap = "white";
-
+    
     smoke = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 10, 10, 10),
         smokeMesh
     )
-
+    
     
     smoke.scale.x = 2
     smoke.scale.y = 2
 
+       scene.add(new THREE.AmbientLight(0x777777));
+
+       var light = new THREE.DirectionalLight(0xdfebff, 1);
+       light.position.set(-50, 200, -100);
+       light.position.multiplyScalar(1.3);
+
+       light.castShadow = true;
+
+       light.shadow.mapSize.width = 1024;
+       light.shadow.mapSize.height = 1024;
+
+       var d = 300;
+
+       light.shadow.camera.left = -d;
+       light.shadow.camera.right = d;
+       light.shadow.camera.top = d;
+       light.shadow.camera.bottom = -d;
+
+       light.shadow.camera.far = 1000;
+
+       scene.add(light);
+    
+    
+    const textureFloor = new THREE.TextureLoader().load('./stone.jpg')
+    textureFloor.anisotropy = 16;
+    textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
+    textureFloor.repeat.set(25, 25);
+    textureFloor.anisotropy = 16;
+    let floor = new THREE.Mesh(
+        new THREE.BoxGeometry(10, 10, 10, 10),
+        new THREE.MeshLambertMaterial({
+            map: textureFloor,
+        })
+    )
+    floor.receiveShadow = true;
+    floor.castShadow = true;
 
 
+    var groundMaterial1 = new THREE.MeshLambertMaterial({
+        map: textureFloor,
+    });
+    var groundMaterial2 = new THREE.MeshLambertMaterial({
+        map: textureFloor,
+        side: THREE.BackSide
+    });
+
+    
+    var mesh1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
+    mesh1.position.y = 5;
+    mesh1.position.x = 150;
+    mesh1.position.z = 145;
+    mesh1.rotation.x = -Math.PI / 2;
+    mesh1.receiveShadow = true;
 
 
-    for (let i = 0; i < 30; i++) {
-        for (let j = 0; j < 30; j++) {
-
-            let floorPart = floor.clone();
-
-            floorPart.position.set(i * 10, 0, j * 10)
-            floorPart.rotation.x -= Math.PI / 2;
-            // floorPart.rotation.z -= Math.PI * Math.floor((Math.random() * 4) + 1)
-            collidableMeshListObjects.push(floorPart)
-            scene.add(floorPart)
+     var mesh2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial2);
+     mesh2.position.y = 4;
+     mesh2.position.x = 150;
+     mesh2.position.z = 145;
+     mesh2.rotation.x = -Math.PI / 2;
+     mesh2.receiveShadow = true;
 
 
-        }
-
-    }
+    scene.add(mesh1)
+    scene.add(mesh2)
+    collidableMeshListObjects.push(mesh1)
 
     const texture = new THREE.TextureLoader().load('./back.jpg')
-
-
 
 
     const material = new THREE.MeshBasicMaterial({
         map: texture
     });
     cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-
-
-    //objects
-
-
-    ambientLight = new THREE.AmbientLight(0xffffff, 1);
-    scene.add(ambientLight);
-
-
-
-    // camera.position.z = 50;
 
     controls = new PointerLockControls(camera, renderer.domElement);
-    // controls.getObject().position.y = 50;
 
     let allowShot = true;
     document.addEventListener('click', () => {
@@ -402,7 +432,7 @@ function init() {
             let bullet = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 7, 7),
                 new THREE.MeshBasicMaterial({
-                    color: 0xffffff
+                    color: '#000000'
                 })
             )
             var time = performance.now();
@@ -615,6 +645,7 @@ function onResourcesLoaded() {
     objects['palmShort1'].position.set(145, 5, 160);
     objects['palmShort1'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['palmShort1'].scale.set(3, 3, 3)
+    objects['palmShort1'].castShadow = true;
     scene.add(objects['palmShort1'])
 
     objects['palmLong'] = models.palmLong.mesh.clone()
@@ -710,10 +741,11 @@ function onResourcesLoaded() {
     objects['race'].position.set(60, 5, 40);
     objects['race'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['race'].scale.set(30, 30, 30)
+    objects['race'].castShadow = true;
     scene.add(objects['race'])
     //spacecraft
     objects['spaceCraft6'] = models.spaceCraft6.mesh.clone()
-    objects['spaceCraft6'].position.set(248, 5, 248);
+    objects['spaceCraft6'].position.set(248, 9, 248);
     objects['spaceCraft6'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['spaceCraft6'].scale.set(5, 5, 5)
     scene.add(objects['spaceCraft6'])
@@ -734,6 +766,11 @@ function onResourcesLoaded() {
 
 
     setTargets()
+
+    scene.traverse(function(element) {
+        element.castShadow = true;
+        element.receiveShadow = true;
+    })
 
 
 
@@ -876,7 +913,17 @@ function collision(bullet) {
         var ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
         var collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
-            console.log('hit')
+            
+            targetsLeft -= 1;
+
+
+
+            const index = collidableMeshListTargets.indexOf(collisionResults[0].object);
+            if (index > -1) {
+                collidableMeshListTargets.splice(index, 1);
+            }
+            scene.remove(collisionResults[0].object)
+            console.log(collisionResults)
             targetHit.pause();
             targetHit.currentTime = 0;
             targetHit.play();
@@ -986,7 +1033,7 @@ function setTargets() {
     targets.push(target9)
     //target10
     let target10 = target.clone()
-    target10.position.set(246, 20, 248);
+    target10.position.set(246, 24, 248);
     target10.rotation.y = 84;
     targets.push(target10)
 
@@ -1004,9 +1051,9 @@ function setTargets() {
 
 
 function render() {
-    xyz.children[0].innerHTML = 'X:' + camera.position.x
-    xyz.children[1].innerHTML = 'Y:' + camera.position.y
-    xyz.children[2].innerHTML = 'Z:' + camera.position.z
+    // xyz.children[0].innerHTML = 'X:' + camera.position.x
+    // xyz.children[1].innerHTML = 'Y:' + camera.position.y
+    // xyz.children[2].innerHTML = 'Z:' + camera.position.z
     // controls.update(clock.getDelta());
     renderer.render(scene, camera);
 
@@ -1015,6 +1062,7 @@ function render() {
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix()
+    
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     // controls.handleResize();
