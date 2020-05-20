@@ -22,12 +22,9 @@ let reload = true;
 let shotAudio = new Audio('./shot.wav')
 let reloadAudio = new Audio('./reload.wav')
 let empty = new Audio('./empty.wav')
-let targetHit = new Audio('reload.wav')
+let targetHit = new Audio('target.wav')
 
 
-let world, mass, body, shape, timeStep = 1 / 60, mesh;
-
-//test
 let xyz = document.getElementById('xyz')
 
 
@@ -52,7 +49,7 @@ var vertex = new THREE.Vector3();
 var color = new THREE.Color();
 let meshFloor;
 var clock = new THREE.Clock();
-let ammo = 15;
+let ammo = 7;
 
 let loadingManager = null;
 let RESOURCES_LOADED = false;
@@ -65,112 +62,112 @@ const models = {
         castShadow: false
     },
     cart: {
-            obj: 'objects/cart.obj',
-            mtl: 'objects/cart.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/cart.obj',
+        mtl: 'objects/cart.mtl',
+        mesh: null,
+        castShadow: false
     },
     cartHigh: {
-            obj: 'objects/cartHigh.obj',
-            mtl: 'objects/cartHigh.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/cartHigh.obj',
+        mtl: 'objects/cartHigh.mtl',
+        mesh: null,
+        castShadow: false
     },
     fountainRoundDetail: {
-            obj: 'objects/fountainRoundDetail.obj',
-            mtl: 'objects/fountainRoundDetail.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/fountainRoundDetail.obj',
+        mtl: 'objects/fountainRoundDetail.mtl',
+        mesh: null,
+        castShadow: false
     },
     lantern: {
-            obj: 'objects/lantern.obj',
-            mtl: 'objects/lantern.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/lantern.obj',
+        mtl: 'objects/lantern.mtl',
+        mesh: null,
+        castShadow: false
     },
     palmLong: {
-            obj: 'objects/palm_long.obj',
-            mtl: 'objects/palm_long.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/palm_long.obj',
+        mtl: 'objects/palm_long.mtl',
+        mesh: null,
+        castShadow: false
     },
     palmShort: {
-            obj: 'objects/palm_short.obj',
-            mtl: 'objects/palm_short.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/palm_short.obj',
+        mtl: 'objects/palm_short.mtl',
+        mesh: null,
+        castShadow: false
     },
     rockLarge: {
-            obj: 'objects/rockLarge.obj',
-            mtl: 'objects/rockLarge.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/rockLarge.obj',
+        mtl: 'objects/rockLarge.mtl',
+        mesh: null,
+        castShadow: false
     },
     stallGreen: {
-            obj: 'objects/stallGreen.obj',
-            mtl: 'objects/stallGreen.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/stallGreen.obj',
+        mtl: 'objects/stallGreen.mtl',
+        mesh: null,
+        castShadow: false
     },
     tower: {
-            obj: 'objects/tower.obj',
-            mtl: 'objects/tower.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/tower.obj',
+        mtl: 'objects/tower.mtl',
+        mesh: null,
+        castShadow: false
     },
     towerSquareArch: {
-            obj: 'objects/towerSquareArch.obj',
-            mtl: 'objects/towerSquareArch.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/towerSquareArch.obj',
+        mtl: 'objects/towerSquareArch.mtl',
+        mesh: null,
+        castShadow: false
     },
     tractorShovel: {
-            obj: 'objects/tractorShovel.obj',
-            mtl: 'objects/tractorShovel.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/tractorShovel.obj',
+        mtl: 'objects/tractorShovel.mtl',
+        mesh: null,
+        castShadow: false
     },
     tree: {
-            obj: 'objects/tree.obj',
-            mtl: 'objects/tree.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/tree.obj',
+        mtl: 'objects/tree.mtl',
+        mesh: null,
+        castShadow: false
     },
     wallNarrowGate: {
-            obj: 'objects/wallNarrowGate.obj',
-            mtl: 'objects/wallNarrowGate.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/wallNarrowGate.obj',
+        mtl: 'objects/wallNarrowGate.mtl',
+        mesh: null,
+        castShadow: false
     },
     race: {
-            obj: 'objects/race.obj',
-            mtl: 'objects/race.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/race.obj',
+        mtl: 'objects/race.mtl',
+        mesh: null,
+        castShadow: false
     },
     portal: {
-            obj: 'objects/portal.obj',
-            mtl: 'objects/portal.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/portal.obj',
+        mtl: 'objects/portal.mtl',
+        mesh: null,
+        castShadow: false
     },
     rocksTallOre: {
-            obj: 'objects/rocksTallOre.obj',
-            mtl: 'objects/rocksTallOre.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/rocksTallOre.obj',
+        mtl: 'objects/rocksTallOre.mtl',
+        mesh: null,
+        castShadow: false
     },
     spaceCraft6: {
-            obj: 'objects/spaceCraft6.obj',
-            mtl: 'objects/spaceCraft6.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/spaceCraft6.obj',
+        mtl: 'objects/spaceCraft6.mtl',
+        mesh: null,
+        castShadow: false
     },
     satelliteDishLarge: {
-            obj: 'objects/satelliteDishLarge.obj',
-            mtl: 'objects/satelliteDishLarge.mtl',
-            mesh: null,
-            castShadow: false
+        obj: 'objects/satelliteDishLarge.obj',
+        mtl: 'objects/satelliteDishLarge.mtl',
+        mesh: null,
+        castShadow: false
     }
 }
 
@@ -182,17 +179,6 @@ const objects = {};
 
 //main initiazlie function
 function init() {
-
-
-
-   
-
-
-
-
-
-
-
 
 
 
@@ -208,7 +194,8 @@ function init() {
         1000
     );
     //camera position
-    camera.position.set(10, 10, -5)
+    camera.position.set(21, 25, 31)
+    camera.rotation.set(0, 10, 0)
     // camera.lookAt(new THREE.Vector3(0, 10, 0));
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -353,29 +340,11 @@ function init() {
         smokeMesh
     )
 
-    smoke.position.set(
-        camera.position.x - 8,
-        camera.position.y - 10,
-        camera.position.z - 6
-    )
-    smoke.scale.x = 1.5
-    smoke.scale.y = 1.5
     
-
-    const target = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        wireframe: false,
-    })
-
-    let targetMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10, 10, 10),
-        smokeMesh
-    )
+    smoke.scale.x = 2
+    smoke.scale.y = 2
 
 
-    targetMesh.position.set(0, 50, 0);
-    scene.add(targetMesh)
-    collidableMeshListTargets.push(targetMesh)
 
 
 
@@ -418,7 +387,7 @@ function init() {
     // camera.position.z = 50;
 
     controls = new PointerLockControls(camera, renderer.domElement);
-    controls.getObject().position.y = 50;
+    // controls.getObject().position.y = 50;
 
     let allowShot = true;
     document.addEventListener('click', () => {
@@ -481,6 +450,12 @@ function init() {
             bullets.push(bullet);
             scene.add(bullet)
 
+
+            smoke.position.set(
+                objects['gun'].position.x,
+                objects['gun'].position.y + 2,
+                objects['gun'].position.z - 5
+            )
 
             camera.add(smoke)
             allowShot = false
@@ -545,7 +520,7 @@ function init() {
                 if (reload === true) {
 
                     reload = false;
-                    ammo = 15;
+                    ammo = 7;
                     reloadAudio.play()
                     document.getElementsByClassName('ammo-box')[2].classList.add('active-ammo')
                     document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
@@ -628,20 +603,20 @@ function onResourcesLoaded() {
     objects['fountainRoundDetail'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['fountainRoundDetail'].scale.set(30, 30, 30)
     scene.add(objects['fountainRoundDetail'])
-    
+
     //palm 
     objects['palmShort'] = models.palmShort.mesh.clone()
     objects['palmShort'].position.set(140, 5, 70);
     objects['palmShort'].rotation.set(Math.PI, 34, Math.PI * 3);
     objects['palmShort'].scale.set(2, 2, 2)
     scene.add(objects['palmShort'])
-    
+
     objects['palmShort1'] = models.palmShort.mesh.clone()
     objects['palmShort1'].position.set(145, 5, 160);
     objects['palmShort1'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['palmShort1'].scale.set(3, 3, 3)
     scene.add(objects['palmShort1'])
-    
+
     objects['palmLong'] = models.palmLong.mesh.clone()
     objects['palmLong'].position.set(130, 5, 180);
     objects['palmLong'].rotation.set(Math.PI, 90, Math.PI * 3);
@@ -660,8 +635,8 @@ function onResourcesLoaded() {
     objects['lantern'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['lantern'].scale.set(25, 25, 25)
     scene.add(objects['lantern'])
-    
-    
+
+
     //stallGreen
     objects['stallGreen'] = models.stallGreen.mesh.clone()
     objects['stallGreen'].position.set(194, 5, 184);
@@ -676,96 +651,96 @@ function onResourcesLoaded() {
     objects['tree'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['tree'].scale.set(25, 25, 25)
     scene.add(objects['tree'])
-    
-    
+
+
     objects['tree1'] = models.tree.mesh.clone()
     objects['tree1'].position.set(71, 5, 154);
     objects['tree1'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['tree1'].scale.set(30, 30, 30)
     scene.add(objects['tree1'])
-    
-    
+
+
     //cartHigh
     objects['cartHigh'] = models.cartHigh.mesh.clone()
     objects['cartHigh'].position.set(168, 5, 87);
     objects['cartHigh'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['cartHigh'].scale.set(25, 25, 25)
     scene.add(objects['cartHigh'])
-    
-    
+
+
     //tower
     objects['tower'] = models.tower.mesh.clone()
     objects['tower'].position.set(256, 5, 38);
     objects['tower'].rotation.set(Math.PI, 45, Math.PI * 3);
-    objects['tower'].scale.set(3, 3,3)
+    objects['tower'].scale.set(3, 3, 3)
     scene.add(objects['tower'])
     //gate
     objects['wallNarrowGate'] = models.wallNarrowGate.mesh.clone()
     objects['wallNarrowGate'].position.set(130, 5, 31);
     objects['wallNarrowGate'].rotation.set(Math.PI, 30, Math.PI * 3);
-    objects['wallNarrowGate'].scale.set(4, 4,4)
+    objects['wallNarrowGate'].scale.set(4, 4, 4)
     scene.add(objects['wallNarrowGate'])
     //tractor
     objects['tractorShovel'] = models.tractorShovel.mesh.clone()
     objects['tractorShovel'].position.set(54, 5, 236);
     objects['tractorShovel'].rotation.set(Math.PI, 5, Math.PI * 3);
-    objects['tractorShovel'].scale.set(30, 30,30)
+    objects['tractorShovel'].scale.set(30, 30, 30)
     scene.add(objects['tractorShovel'])
     // cart
     objects['cart'] = models.cart.mesh.clone()
     objects['cart'].position.set(106, 5, 216);
     objects['cart'].rotation.set(Math.PI, 5, Math.PI * 3);
-    objects['cart'].scale.set(30, 30,30)
+    objects['cart'].scale.set(30, 30, 30)
     scene.add(objects['cart'])
     //rock
     objects['rockLarge'] = models.rockLarge.mesh.clone()
     objects['rockLarge'].position.set(29, 5, 103);
     objects['rockLarge'].rotation.set(Math.PI, 5, Math.PI * 3);
-    objects['rockLarge'].scale.set(30, 30,30)
+    objects['rockLarge'].scale.set(30, 30, 30)
     scene.add(objects['rockLarge'])
     //portal
     objects['portal'] = models.portal.mesh.clone()
     objects['portal'].position.set(20, 5, 191);
     objects['portal'].rotation.set(Math.PI, 5, Math.PI * 3);
-    objects['portal'].scale.set(4, 4,4)
+    objects['portal'].scale.set(4, 4, 4)
     scene.add(objects['portal'])
 
-//race car
-objects['race'] = models.race.mesh.clone()
-objects['race'].position.set(60, 5, 40);
-objects['race'].rotation.set(Math.PI, 90, Math.PI * 3);
-objects['race'].scale.set(30, 30, 30)
-scene.add(objects['race'])
-//spacecraft
-objects['spaceCraft6'] = models.spaceCraft6.mesh.clone()
-objects['spaceCraft6'].position.set(248, 5, 248);
-objects['spaceCraft6'].rotation.set(Math.PI, 90, Math.PI * 3);
-objects['spaceCraft6'].scale.set(5, 5, 5)
-scene.add(objects['spaceCraft6'])
-//rockStall
-objects['rocksTallOre'] = models.rocksTallOre.mesh.clone()
-objects['rocksTallOre'].position.set(258, 5, 131);
-objects['rocksTallOre'].rotation.set(Math.PI, 90, Math.PI * 3);
-objects['rocksTallOre'].scale.set(5, 5, 5)
-scene.add(objects['rocksTallOre'])
+    //race car
+    objects['race'] = models.race.mesh.clone()
+    objects['race'].position.set(60, 5, 40);
+    objects['race'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['race'].scale.set(30, 30, 30)
+    scene.add(objects['race'])
+    //spacecraft
+    objects['spaceCraft6'] = models.spaceCraft6.mesh.clone()
+    objects['spaceCraft6'].position.set(248, 5, 248);
+    objects['spaceCraft6'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['spaceCraft6'].scale.set(5, 5, 5)
+    scene.add(objects['spaceCraft6'])
+    //rockStall
+    objects['rocksTallOre'] = models.rocksTallOre.mesh.clone()
+    objects['rocksTallOre'].position.set(258, 5, 131);
+    objects['rocksTallOre'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['rocksTallOre'].scale.set(5, 5, 5)
+    scene.add(objects['rocksTallOre'])
 
-//satellite
-objects['satelliteDishLarge'] = models.satelliteDishLarge.mesh.clone()
-objects['satelliteDishLarge'].position.set(133, 5, 271);
-objects['satelliteDishLarge'].rotation.set(Math.PI, 3, Math.PI * 3);
-objects['satelliteDishLarge'].scale.set(5, 5, 5)
-scene.add(objects['satelliteDishLarge'])
-
-
+    //satellite
+    objects['satelliteDishLarge'] = models.satelliteDishLarge.mesh.clone()
+    objects['satelliteDishLarge'].position.set(133, 5, 271);
+    objects['satelliteDishLarge'].rotation.set(Math.PI, 3, Math.PI * 3);
+    objects['satelliteDishLarge'].scale.set(5, 5, 5)
+    scene.add(objects['satelliteDishLarge'])
 
 
-    
-    
-    
+
+    setTargets()
+
+
+
 
 
     // scene.add(sphereBody)
-  
+
 }
 
 
@@ -776,33 +751,23 @@ function animate() {
     // if(RESOURCES_LOADED){
     requestAnimationFrame(animate);
 
-    // cube.rotation.x += 0.01;
-    // cube.rotation.y += 0.01;
-
-    // if (camera.position.x > 50) {
-    //     moveForward = false;
-    //     moveBackward = false;
-    //     moveLeft = false;
-    //     moveRight = false;
-    // }
-
     if (controls.isLocked === true) {
 
 
 
-    // updatePhysics();
+        // updatePhysics();
 
 
 
 
         raycaster.ray.origin.copy(controls.getObject().position);
         raycaster.ray.origin.y -= 10;
-        
+
 
         raycasterGun.ray.origin.copy(controls.getObject().position);
         raycasterGun.ray.origin.z -= 10;
         raycasterGun.ray.origin.x -= 20;
-        raycasterGun.ray.origin.y -= 0 ;
+        raycasterGun.ray.origin.y -= 0;
 
 
 
@@ -822,7 +787,7 @@ function animate() {
 
 
 
-        
+
 
         var time = performance.now();
         var delta = (time - prevTime) / 1000;
@@ -843,7 +808,7 @@ function animate() {
             objects["gun"].position.z
         );
 
-        
+
         //reload animation
 
 
@@ -912,6 +877,8 @@ function collision(bullet) {
         var collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
             console.log('hit')
+            targetHit.pause();
+            targetHit.currentTime = 0;
             targetHit.play();
             bullet.alive = false;
             break;
@@ -930,9 +897,9 @@ function collision(bullet) {
 
 /////building the while map
 function setAllBarriers() {
-    
-    const wall1Texture= new THREE.TextureLoader().load('./grass.jpg')
-    
+
+    const wall1Texture = new THREE.TextureLoader().load('./grass.jpg')
+
     let wall1 = new THREE.Mesh(
         new THREE.BoxGeometry(50, 10, 4),
         new THREE.MeshBasicMaterial({
@@ -940,8 +907,8 @@ function setAllBarriers() {
             wireframe: false
         })
     )
-  
-    wall1.position.set(40,10,0)
+
+    wall1.position.set(40, 10, 0)
     collidableMeshListWalls.push(wall1)
     scene.add(wall1)
 
@@ -950,8 +917,90 @@ function setAllBarriers() {
 
 
 
+function setTargets() {
 
 
+
+
+    const targetImage = new THREE.TextureLoader().load('/target.png')
+
+    let target = new THREE.Mesh(
+        new THREE.BoxGeometry(0.0001, 10, 9, 100),
+        new THREE.MeshBasicMaterial({
+            map: targetImage,
+            wireframe: false,
+            transparent: true,
+            opacity: 1
+        })
+    )
+    //  target.scale.set(0.145, 1.051, 1.051);
+
+
+
+
+    let targets = []
+    //target1
+    let target1 = target.clone()
+    target1.position.set(246, 55, 20);
+    target1.rotation.y = 2;
+    targets.push(target1)
+    //target2
+    let target2 = target.clone()
+    target2.position.set(128, 35, 42);
+    target2.rotation.y = 3;
+    targets.push(target2)
+    //target3
+    let target3 = target.clone()
+    target3.position.set(39, 27, 106);
+    target3.rotation.y = 2.8;
+    targets.push(target3)
+    //target4
+    let target4 = target.clone()
+    target4.position.set(45, 27, 256);
+    target4.rotation.y = 7.5;
+    targets.push(target4)
+    //target5
+    let target5 = target.clone()
+    target5.position.set(140, 53, 213.5);
+    target5.rotation.y = 7.5;
+    targets.push(target5)
+    //target6
+    let target6 = target.clone()
+    target6.position.set(216, 33, 151);
+    target6.rotation.y = 13;
+    targets.push(target6)
+    //target7
+    let target7 = target.clone()
+    target7.position.set(264, 33, 158);
+    target7.rotation.y = 6;
+    targets.push(target7)
+    //target8
+    let target8 = target.clone()
+    target8.position.set(82, 40, 155);
+    target8.rotation.y = 6;
+    targets.push(target8)
+    //target9
+    let target9 = target.clone()
+    target9.position.set(284, 60, 67);
+    target9.rotation.y = 84;
+    targets.push(target9)
+    //target10
+    let target10 = target.clone()
+    target10.position.set(246, 20, 248);
+    target10.rotation.y = 84;
+    targets.push(target10)
+
+
+    targets.sort(() => Math.random() - 0.5);
+    console.log(targets)
+    for (let i = 0; i < 5; i++) {
+        scene.add(targets[i])
+        collidableMeshListTargets.push(targets[i])
+    }
+
+
+
+}
 
 
 function render() {
