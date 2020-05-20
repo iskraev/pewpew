@@ -14,7 +14,7 @@ import {
     Sky
 }
 from './examples/jsm/objects/Sky.js';
-let scene, camera, renderer, cube, controls, ambientLight
+let scene, camera, renderer, cube, controls, ambientLight, floorTop, floorBottom
 
 let smoke
 let reload = true;
@@ -211,12 +211,11 @@ function init() {
         RESOURCES_LOADED = true;
 
         onResourcesLoaded();
+        animate();
+        // controls.lock()
+
     }
 
-
-
-
-    //  setAllBarriers();
 
 
 
@@ -388,25 +387,25 @@ function init() {
     });
 
     
-    var mesh1 = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
-    mesh1.position.y = 5;
-    mesh1.position.x = 150;
-    mesh1.position.z = 145;
-    mesh1.rotation.x = -Math.PI / 2;
-    mesh1.receiveShadow = true;
+     floorTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
+    floorTop.position.y = 5;
+    floorTop.position.x = 150;
+    floorTop.position.z = 145;
+    floorTop.rotation.x = -Math.PI / 2;
+    floorTop.receiveShadow = true;
 
 
-     var mesh2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial2);
-     mesh2.position.y = 4;
-     mesh2.position.x = 150;
-     mesh2.position.z = 145;
-     mesh2.rotation.x = -Math.PI / 2;
-     mesh2.receiveShadow = true;
+    floorBottom = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial2);
+     floorBottom.position.y = 4;
+     floorBottom.position.x = 150;
+     floorBottom.position.z = 145;
+     floorBottom.rotation.x = -Math.PI / 2;
+     floorBottom.receiveShadow = true;
 
 
-    scene.add(mesh1)
-    scene.add(mesh2)
-    collidableMeshListObjects.push(mesh1)
+    scene.add(floorTop)
+    scene.add(floorBottom)
+    // collidableMeshListObjects.push(mesh1)
 
     const texture = new THREE.TextureLoader().load('./back.jpg')
 
@@ -420,88 +419,95 @@ function init() {
 
     let allowShot = true;
     document.addEventListener('click', () => {
-        controls.lock();
-        if (ammo > 0 && allowShot) {
-            shotAudio.pause();
-            shotAudio.currentTime = 0;
-            shotAudio.play()
-            ammo -= 1;
-            let ammoCount = document.getElementById('ammo')
-            ammoCount.innerHTML = ammo
-            let bullet = new THREE.Mesh(
-                new THREE.SphereGeometry(0.5, 7, 7),
-                new THREE.MeshBasicMaterial({
-                    color: '#000000'
-                })
-            )
-            var time = performance.now();
+        // controls.lock();
+       
+        if(controls.isLocked){
+            if (ammo > 0 && allowShot) {
+                shotAudio.pause();
+                shotAudio.currentTime = 0;
+                shotAudio.play()
+                ammo -= 1;
+                let ammoCount = document.getElementById('ammo')
+                ammoCount.innerHTML = ammo
+                let bullet = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.5, 7, 7),
+                    new THREE.MeshBasicMaterial({
+                        color: '#000000'
+                    })
+                )
+                var time = performance.now();
 
-            bullet.position.set(
-                camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.6,
-                camera.position.y,
-                camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.6
-                // + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75
-            )
-
-
-            bullet.velocity = new THREE.Vector3(0, 0, -1)
-            bullet.velocity.applyQuaternion(camera.quaternion);
-            bullet.velocity.set(
-                bullet.velocity.x * 10,
-                bullet.velocity.y * 10,
-                bullet.velocity.z * 10
-            )
-            smoke.rotation.z -= Math.floor((Math.random() * 10) + 1);
-            smoke.position.y = Math.sin(time / 5000 * Math.PI - 1) - 1;
-
-            let recoil = setInterval(() => {
-                objects['gun'].rotation.x += 0.02;
-            }, 1)
-
-            setTimeout(() => {
-                objects['gun'].rotation.set(Math.PI, 0, Math.PI);
-                clearInterval(recoil);
-            }, 200)
-
-            setTimeout(() => {
-                camera.remove(smoke)
-            }, 100)
-
-            setTimeout(() => {
-                allowShot = true
-            }, 200)
-
-            bullet.alive = true;
-            setTimeout(function () {
-                bullet.alive = false;
-                scene.remove(bullet)
-            }, 1000)
-            bullets.push(bullet);
-            scene.add(bullet)
+                bullet.position.set(
+                    camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.6,
+                    camera.position.y,
+                    camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.6
+                    // + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75
+                )
 
 
-            smoke.position.set(
-                objects['gun'].position.x,
-                objects['gun'].position.y + 2,
-                objects['gun'].position.z - 5
-            )
+                bullet.velocity = new THREE.Vector3(0, 0, -1)
+                bullet.velocity.applyQuaternion(camera.quaternion);
+                bullet.velocity.set(
+                    bullet.velocity.x * 10,
+                    bullet.velocity.y * 10,
+                    bullet.velocity.z * 10
+                )
+                smoke.rotation.z -= Math.floor((Math.random() * 10) + 1);
+                smoke.position.y = Math.sin(time / 5000 * Math.PI - 1) - 1;
 
-            camera.add(smoke)
-            allowShot = false
+                let recoil = setInterval(() => {
+                    objects['gun'].rotation.x += 0.02;
+                }, 1)
 
-        } else {
-            if (reload) {
-                empty.pause();
-                empty.currentTime = 0;
-                empty.play()
+                setTimeout(() => {
+                    objects['gun'].rotation.set(Math.PI, 0, Math.PI);
+                    clearInterval(recoil);
+                }, 200)
+
+                setTimeout(() => {
+                    camera.remove(smoke)
+                }, 100)
+
+                setTimeout(() => {
+                    allowShot = true
+                }, 200)
+
+                bullet.alive = true;
+                setTimeout(function () {
+                    bullet.alive = false;
+                    scene.remove(bullet)
+                }, 1000)
+                bullets.push(bullet);
+                scene.add(bullet)
+
+
+                smoke.position.set(
+                    objects['gun'].position.x,
+                    objects['gun'].position.y + 2,
+                    objects['gun'].position.z - 5
+                )
+
+                camera.add(smoke)
+                allowShot = false
+
+            } else {
+                if (reload) {
+                    empty.pause();
+                    empty.currentTime = 0;
+                    empty.play()
+                }
+
             }
 
         }
 
-
     })
 
     controls.addEventListener('lock', function () {
+        
+
+
+
 
         // instructions.style.display = 'none';
         // blocker.style.display = 'none';
@@ -509,9 +515,11 @@ function init() {
     });
 
     controls.addEventListener('unlock', function () {
-
-        // blocker.style.display = 'block';
-        // instructions.style.display = '';
+        // moveRight, moveLeft, moveBackward, moveForward = false;
+        
+        // controls.moveRight(0);
+        // controls.moveForward(0);
+        
 
     });
 
@@ -519,62 +527,73 @@ function init() {
 
     var onKeyDown = function (event) {
 
-        switch (event.keyCode) {
+        if(event.keyCode === 13){
+            controls.lock()
 
-            case 38: // up
-            case 87: // w
-                moveForward = true;
-                break;
+        }
 
-            case 37: // left
-            case 65: // a
-                moveLeft = true;
-                break;
 
-            case 40: // down
-            case 83: // s
-                moveBackward = true;
-                break;
 
-            case 39: // right
-            case 68: // d
-                moveRight = true;
-                break;
+        if(controls.isLocked){
+            switch (event.keyCode) {
 
-            case 32: // space
-                if (canJump === true) velocity.y += 90;
-                canJump = false;
-                break;
-            case 82:
-                if (reload === true) {
+                case 38: // up
+                case 87: // w
+                    moveForward = true;
+                    break;
 
-                    reload = false;
-                    ammo = 7;
-                    reloadAudio.play()
-                    document.getElementsByClassName('ammo-box')[2].classList.add('active-ammo')
-                    document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
+                case 37: // left
+                case 65: // a
+                    moveLeft = true;
+                    break;
 
-                    let reloadingBar = document.getElementById('reloading-bar')
-                    let reloadingAnimation = setInterval(() => {
-                        allowShot = false;
-                        reloadingBar.style.width = `${(reloadAudio.currentTime / reloadAudio.duration) * 100}%`
-                    }, 20)
-                    reloadAudio.onended = () => {
-                        clearInterval(reloadingAnimation)
-                        allowShot = true;
-                        reload = true;
-                        let ammoCount = document.getElementById('ammo')
-                        ammoCount.innerHTML = ammo
-                        document.getElementsByClassName('ammo-box')[2].classList.remove('active-ammo')
-                        document.getElementsByClassName('ammo-box')[0].classList.add('active-ammo')
-                        document.getElementsByClassName('ammo-box')[1].classList.remove('active-ammo')
+                case 40: // down
+                case 83: // s
+                    moveBackward = true;
+                    break;
+
+                case 39: // right
+                case 68: // d
+                    moveRight = true;
+                    break;
+
+                case 32: // space
+                    if (canJump === true) velocity.y += 90;
+                    canJump = false;
+                    break;
+                case 82:
+                    if (reload === true) {
+
+                        reload = false;
+                        ammo = 7;
+                        reloadAudio.play()
+                        document.getElementsByClassName('ammo-box')[2].classList.add('active-ammo')
+                        document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
+
+                        let reloadingBar = document.getElementById('reloading-bar')
+                        let reloadingAnimation = setInterval(() => {
+                            allowShot = false;
+                            reloadingBar.style.width = `${(reloadAudio.currentTime / reloadAudio.duration) * 100}%`
+                        }, 20)
+                        reloadAudio.onended = () => {
+                            clearInterval(reloadingAnimation)
+                            allowShot = true;
+                            reload = true;
+                            let ammoCount = document.getElementById('ammo')
+                            ammoCount.innerHTML = ammo
+                            document.getElementsByClassName('ammo-box')[2].classList.remove('active-ammo')
+                            document.getElementsByClassName('ammo-box')[0].classList.add('active-ammo')
+                            document.getElementsByClassName('ammo-box')[1].classList.remove('active-ammo')
+                        }
+
                     }
 
-                }
 
+                    break;
 
-                break;
+              
 
+            }
         }
 
     };
@@ -763,6 +782,16 @@ function onResourcesLoaded() {
     scene.add(objects['satelliteDishLarge'])
 
 
+    // let allObjects = Object.keys(objects)
+    // for (let i = 1; i < allObjects.length; i++) {
+    //     for (let j = 0; j < objects[allObjects[i]].children.length; j++) {
+            
+    //         collidableMeshListObjects.push(objects[allObjects[i]].children[j])
+            
+    //     }
+    // }
+
+    // console.log(objects)
 
     setTargets()
 
@@ -811,7 +840,7 @@ function animate() {
 
 
 
-        var intersections = raycaster.intersectObjects(collidableMeshListObjects);
+        var intersections = raycaster.intersectObjects([floorTop]);
         var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
 
         var onObject = intersections.length > 0;
@@ -902,6 +931,11 @@ function animate() {
 
         prevTime = time;
 
+    }else{
+        //  controls.moveRight(0);
+        //  controls.moveForward(0);
+         moveRight, moveLeft, moveBackward, moveForward = false;
+         velocity.x, velocity.y, velocity.z = 0;
     }
 
 
@@ -930,6 +964,12 @@ function collision(bullet) {
             bullet.alive = false;
             break;
         }
+
+
+        var collisionResultsNotTargets = ray.intersectObjects(collidableMeshListObjects);
+        if (collisionResultsNotTargets.length > 0) {
+            bullet.alive = false;
+        }
     }
 }
 
@@ -937,37 +977,7 @@ function collision(bullet) {
 
 
 
-
-
-
-
-
-/////building the while map
-function setAllBarriers() {
-
-    const wall1Texture = new THREE.TextureLoader().load('./grass.jpg')
-
-    let wall1 = new THREE.Mesh(
-        new THREE.BoxGeometry(50, 10, 4),
-        new THREE.MeshBasicMaterial({
-            map: wall1Texture,
-            wireframe: false
-        })
-    )
-
-    wall1.position.set(40, 10, 0)
-    collidableMeshListWalls.push(wall1)
-    scene.add(wall1)
-
-}
-//////////
-
-
-
 function setTargets() {
-
-
-
 
     const targetImage = new THREE.TextureLoader().load('/target.png')
 
@@ -980,10 +990,6 @@ function setTargets() {
             opacity: 1
         })
     )
-    //  target.scale.set(0.145, 1.051, 1.051);
-
-
-
 
     let targets = []
     //target1
@@ -1042,6 +1048,7 @@ function setTargets() {
     for (let i = 0; i < 5; i++) {
         scene.add(targets[i])
         collidableMeshListTargets.push(targets[i])
+        
     }
 
 
@@ -1070,9 +1077,8 @@ function onWindowResize() {
 
 window.addEventListener('resize', onWindowResize, false);
 
-window.onload = init;
+init();
 
-animate();
 
 
 

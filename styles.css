@@ -45,3 +45,8 @@ body{
     /* width: 100%; */
     background-color: rgb(0, 255, 0);
 }
+
+canvas{
+    width: 99% !important;
+    height: 99% !important;
+}
