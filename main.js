@@ -23,15 +23,22 @@ let shotAudio = new Audio('./shot.wav')
 let reloadAudio = new Audio('./reload.wav')
 let empty = new Audio('./empty.wav')
 let targetHit = new Audio('target.wav')
+let horn = new Audio('horn.mp3')
+let finish = new Audio('finish.wav')
+let ready = new Audio('ready.wav')
+let go = new Audio('go.wav')
 
+let timerWaiting = false;
 
 let xyz = document.getElementById('xyz')
 let playing = false;
-
+let minutes, seconds, miliseconds;
+let printedTime = ''
+let readyInterval;
 
 var raycaster, raycasterGun;
-
-
+let timer = 0;
+let timerInterval;
 let collidableMeshListObjects = []
 let collidableMeshListWalls = []
 let collidableMeshListTargets = []
@@ -605,7 +612,37 @@ function init() {
 
 
                     break;
+                    case 84:
+                        if (!timerWaiting) {
+                            clearTargets()
+                            ready.play();
 
+
+                            setTimeout(() => {
+                                clearInterval(readyInterval)
+                                setTargets();
+                                horn.play()
+                                go.play();
+                                targetsLeft = 5;
+                                document.getElementById('targets-left').innerHTML = targetsLeft;
+                                timerInterval = setInterval(() => {
+                                    timer += (10 / 1000)
+                                    timer.toPrecision(2);
+                                    document.getElementById('time').innerHTML = printTime(timer);
+                                }, 10)
+                                timerWaiting = false;
+                            }, 3000)
+
+                            readyInterval = setInterval(() => {
+                                ready.play();
+                            }, 1000)
+                            timerWaiting = true
+                        }
+                        
+
+                        
+
+                    break;
               
 
             }
@@ -649,8 +686,39 @@ function init() {
     // animate();
 
 }
+function clearTargets(){
+    for (let i = 0; i < collidableMeshListTargets.length; i++) {
+        scene.remove(collidableMeshListTargets[i])
+        
+    }
+    collidableMeshListTargets = [];
+    clearInterval(timerInterval)
+    timer = 0;
+}
+function printTime(time){
+    minutes = Math.floor(time/ 60)
+    seconds = Math.floor(time) % 60;
+    miliseconds = Math.floor((time - Math.floor(time)) * 100);
+    printedTime = ''
+    if(minutes < 10){
+        printedTime += `0${minutes}:`
+    }else{
+        printedTime += `${minutes}:`
+    }
+    if(seconds < 10){
+        printedTime += `0${seconds}:`
+    }else{
+        printedTime += `${seconds}:`
+    }
+    if (miliseconds < 10) {
+        printedTime += `0${miliseconds}`
+    }else{
+        printedTime += `${miliseconds}`
+    }
 
+    return printedTime
 
+}
 
 function onResourcesLoaded() {
     //gun model
@@ -808,7 +876,7 @@ function onResourcesLoaded() {
 
     // console.log(objects)
 
-    setTargets()
+    
 
     scene.traverse(function(element) {
         if (!(element instanceof THREE.AmbientLight)) {
@@ -964,9 +1032,14 @@ function collision(bullet) {
         var collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
             
+            
             targetsLeft -= 1;
+            document.getElementById('targets-left').innerHTML = targetsLeft;
 
-
+            if(targetsLeft === 0){
+                clearInterval(timerInterval)
+                finish.play();
+            }
 
             const index = collidableMeshListTargets.indexOf(collisionResults[0].object);
             if (index > -1) {
