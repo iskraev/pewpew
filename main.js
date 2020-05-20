@@ -26,7 +26,7 @@ let targetHit = new Audio('target.wav')
 
 
 let xyz = document.getElementById('xyz')
-
+let playing = false;
 
 
 var raycaster, raycasterGun;
@@ -200,16 +200,22 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    document.getElementById('play-area').appendChild(renderer.domElement);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 
 
     loadingManager = new THREE.LoadingManager();
+
+    loadingManager.onProgress = function(e, b){
+        document.getElementById('loading-percent').innerHTML = Math.floor((b / 38) * 100) + '%';
+    }
+
+
     loadingManager.onLoad = function () {
         RESOURCES_LOADED = true;
-
+        document.getElementById('loading-bar').innerHTML = '<h2>Press ENTER to start</h2>';
         onResourcesLoaded();
         animate();
         // controls.lock()
@@ -528,7 +534,16 @@ function init() {
     var onKeyDown = function (event) {
 
         if(event.keyCode === 13){
-            controls.lock()
+           
+            if(RESOURCES_LOADED){
+                controls.lock()
+                if (!playing) {
+                    console.log("TEST")
+                    document.getElementById('play-area').style.display = "block";
+                    document.getElementById('loading').style.display = "none";
+                }
+                playing = true
+            }
 
         }
 
