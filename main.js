@@ -14,10 +14,6 @@ import {
     Sky
 }
 from './examples/jsm/objects/Sky.js';
-import {
-    GUI
-}
-from './examples/jsm/libs/dat.gui.module.js';
 let scene, camera, renderer, cube, controls, ambientLight
 
 let smoke
@@ -29,16 +25,19 @@ let empty = new Audio('./empty.wav')
 let targetHit = new Audio('reload.wav')
 
 
+let world, mass, body, shape, timeStep = 1 / 60, mesh;
+
+//test
+let xyz = document.getElementById('xyz')
 
 
 
+var raycaster, raycasterGun;
 
 
-
-var raycaster;
-
-
-let collidableMeshList = []
+let collidableMeshListObjects = []
+let collidableMeshListWalls = []
+let collidableMeshListTargets = []
 
 var moveForward = false;
 var moveBackward = false;
@@ -64,8 +63,115 @@ const models = {
         mtl: 'models/Models/pistolSilencer.mtl',
         mesh: null,
         castShadow: false
+    },
+    cart: {
+            obj: 'objects/cart.obj',
+            mtl: 'objects/cart.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    cartHigh: {
+            obj: 'objects/cartHigh.obj',
+            mtl: 'objects/cartHigh.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    fountainRoundDetail: {
+            obj: 'objects/fountainRoundDetail.obj',
+            mtl: 'objects/fountainRoundDetail.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    lantern: {
+            obj: 'objects/lantern.obj',
+            mtl: 'objects/lantern.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    palmLong: {
+            obj: 'objects/palm_long.obj',
+            mtl: 'objects/palm_long.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    palmShort: {
+            obj: 'objects/palm_short.obj',
+            mtl: 'objects/palm_short.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    rockLarge: {
+            obj: 'objects/rockLarge.obj',
+            mtl: 'objects/rockLarge.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    stallGreen: {
+            obj: 'objects/stallGreen.obj',
+            mtl: 'objects/stallGreen.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    tower: {
+            obj: 'objects/tower.obj',
+            mtl: 'objects/tower.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    towerSquareArch: {
+            obj: 'objects/towerSquareArch.obj',
+            mtl: 'objects/towerSquareArch.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    tractorShovel: {
+            obj: 'objects/tractorShovel.obj',
+            mtl: 'objects/tractorShovel.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    tree: {
+            obj: 'objects/tree.obj',
+            mtl: 'objects/tree.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    wallNarrowGate: {
+            obj: 'objects/wallNarrowGate.obj',
+            mtl: 'objects/wallNarrowGate.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    race: {
+            obj: 'objects/race.obj',
+            mtl: 'objects/race.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    portal: {
+            obj: 'objects/portal.obj',
+            mtl: 'objects/portal.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    rocksTallOre: {
+            obj: 'objects/rocksTallOre.obj',
+            mtl: 'objects/rocksTallOre.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    spaceCraft6: {
+            obj: 'objects/spaceCraft6.obj',
+            mtl: 'objects/spaceCraft6.mtl',
+            mesh: null,
+            castShadow: false
+    },
+    satelliteDishLarge: {
+            obj: 'objects/satelliteDishLarge.obj',
+            mtl: 'objects/satelliteDishLarge.mtl',
+            mesh: null,
+            castShadow: false
     }
-
 }
 
 const bullets = [];
@@ -73,8 +179,24 @@ const bullets = [];
 const objects = {};
 
 
+
 //main initiazlie function
 function init() {
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
     //set ammo count to the html element
     document.getElementById('ammo').innerHTML = ammo;
 
@@ -104,7 +226,7 @@ function init() {
 
 
 
-
+    //  setAllBarriers();
 
 
 
@@ -156,89 +278,20 @@ function init() {
     sunSphere.visible = effectController.sun;
 
 
-    // function guiChanged() {
-
-    //     var uniforms = sky.material.uniforms;
-    //     uniforms["turbidity"].value = effectController.turbidity;
-    //     uniforms["rayleigh"].value = effectController.rayleigh;
-    //     uniforms["mieCoefficient"].value = effectController.mieCoefficient;
-    //     uniforms["mieDirectionalG"].value = effectController.mieDirectionalG;
-    //     uniforms["luminance"].value = effectController.luminance;
-
-    //     var theta = Math.PI * (effectController.inclination - 0.5);
-    //     var phi = 2 * Math.PI * (effectController.azimuth - 0.5);
-
-    //     sunSphere.position.x = distance * Math.cos(phi);
-    //     sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
-    //     sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
-
-    //     sunSphere.visible = effectController.sun;
-
-    //     uniforms["sunPosition"].value.copy(sunSphere.position);
-
-    //     renderer.render(scene, camera);
-
-    // }
-
-    // var gui = new GUI();
-
-    // gui.add(effectController, "turbidity", 1.0, 20.0, 0.1).onChange(guiChanged);
-    // gui.add(effectController, "rayleigh", 0.0, 4, 0.001).onChange(guiChanged);
-    // gui.add(effectController, "mieCoefficient", 0.0, 0.1, 0.001).onChange(guiChanged);
-    // gui.add(effectController, "mieDirectionalG", 0.0, 1, 0.001).onChange(guiChanged);
-    // gui.add(effectController, "luminance", 0.0, 2).onChange(guiChanged);
-    // gui.add(effectController, "inclination", 0, 1, 0.0001).onChange(guiChanged);
-    // gui.add(effectController, "azimuth", 0, 1, 0.0001).onChange(guiChanged);
-    // gui.add(effectController, "sun").onChange(guiChanged);
-
-    // guiChanged();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     var reticle = new THREE.Mesh(
-        new THREE.RingBufferGeometry( 0.09, 0.14 , 32),
-        new THREE.MeshBasicMaterial( {color: 0xffffff, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })
+        new THREE.RingBufferGeometry(0.09, 0.14, 32),
+        new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            blending: THREE.AdditiveBlending,
+            side: THREE.DoubleSide
+        })
     );
     reticle.position.z = -8;
     reticle.applyQuaternion(camera.quaternion)
     camera.add(reticle);
-    
+
 
     for (let _key in models) {
         (function (key) {
@@ -275,14 +328,15 @@ function init() {
 
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-    const textureFloor = new THREE.TextureLoader().load('./grass.jpg')
+    const textureFloor = new THREE.TextureLoader().load('./stone.jpg')
     let floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10, 10, 10),
+        new THREE.BoxGeometry(10, 10, 10, 10),
         new THREE.MeshBasicMaterial({
             map: textureFloor,
             wireframe: false
         })
     )
+
 
     const smokeParticle = new THREE.TextureLoader().load('fire_01.png')
     // /smokeParticle.alphaMap(0)
@@ -302,12 +356,12 @@ function init() {
     smoke.position.set(
         camera.position.x - 8,
         camera.position.y - 10,
-        camera.position.z - 3
+        camera.position.z - 6
     )
     smoke.scale.x = 1.5
     smoke.scale.y = 1.5
+    
 
-  
     const target = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         wireframe: false,
@@ -319,37 +373,27 @@ function init() {
     )
 
 
-    targetMesh.position.set(0,50,0);
+    targetMesh.position.set(0, 50, 0);
     scene.add(targetMesh)
-    collidableMeshList.push(targetMesh)
+    collidableMeshListTargets.push(targetMesh)
 
 
 
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < 30; i++) {
+        for (let j = 0; j < 30; j++) {
 
             let floorPart = floor.clone();
+
             floorPart.position.set(i * 10, 0, j * 10)
             floorPart.rotation.x -= Math.PI / 2;
-            floorPart.rotation.z -= Math.PI * Math.floor((Math.random() * 4) + 1)
-            collidableMeshList.push(floorPart)
+            // floorPart.rotation.z -= Math.PI * Math.floor((Math.random() * 4) + 1)
+            collidableMeshListObjects.push(floorPart)
             scene.add(floorPart)
 
 
         }
 
     }
-
-
-
-    /////////////////////////
-
-
-
-
-
-
-
 
     const texture = new THREE.TextureLoader().load('./back.jpg')
 
@@ -363,17 +407,6 @@ function init() {
     // scene.add(cube);
 
 
-
-
-
-
-
-
-
-
-
-
-
     //objects
 
 
@@ -385,12 +418,12 @@ function init() {
     // camera.position.z = 50;
 
     controls = new PointerLockControls(camera, renderer.domElement);
-
+    controls.getObject().position.y = 50;
 
     let allowShot = true;
     document.addEventListener('click', () => {
         controls.lock();
-        if(ammo > 0 && allowShot){
+        if (ammo > 0 && allowShot) {
             shotAudio.pause();
             shotAudio.currentTime = 0;
             shotAudio.play()
@@ -412,7 +445,7 @@ function init() {
                 // + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75
             )
 
-         
+
             bullet.velocity = new THREE.Vector3(0, 0, -1)
             bullet.velocity.applyQuaternion(camera.quaternion);
             bullet.velocity.set(
@@ -423,19 +456,19 @@ function init() {
             smoke.rotation.z -= Math.floor((Math.random() * 10) + 1);
             smoke.position.y = Math.sin(time / 5000 * Math.PI - 1) - 1;
 
-            let recoil = setInterval(()=>{
+            let recoil = setInterval(() => {
                 objects['gun'].rotation.x += 0.02;
-            },1)
-            
+            }, 1)
+
             setTimeout(() => {
                 objects['gun'].rotation.set(Math.PI, 0, Math.PI);
                 clearInterval(recoil);
             }, 200)
-            
+
             setTimeout(() => {
                 camera.remove(smoke)
             }, 100)
-            
+
             setTimeout(() => {
                 allowShot = true
             }, 200)
@@ -451,9 +484,9 @@ function init() {
 
             camera.add(smoke)
             allowShot = false
-           
-        }else{
-            if(reload){
+
+        } else {
+            if (reload) {
                 empty.pause();
                 empty.currentTime = 0;
                 empty.play()
@@ -461,7 +494,7 @@ function init() {
 
         }
 
-        
+
     })
 
     controls.addEventListener('lock', function () {
@@ -505,20 +538,20 @@ function init() {
                 break;
 
             case 32: // space
-                if (canJump === true) velocity.y += 200;
+                if (canJump === true) velocity.y += 90;
                 canJump = false;
                 break;
             case 82:
-                if (reload === true){
-                    
+                if (reload === true) {
+
                     reload = false;
                     ammo = 15;
                     reloadAudio.play()
                     document.getElementsByClassName('ammo-box')[2].classList.add('active-ammo')
                     document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
-                   
+
                     let reloadingBar = document.getElementById('reloading-bar')
-                    let reloadingAnimation = setInterval(()=>{
+                    let reloadingAnimation = setInterval(() => {
                         allowShot = false;
                         reloadingBar.style.width = `${(reloadAudio.currentTime / reloadAudio.duration) * 100}%`
                     }, 20)
@@ -534,7 +567,7 @@ function init() {
                     }
 
                 }
-                
+
 
                 break;
 
@@ -573,24 +606,167 @@ function init() {
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 
-    // raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
-
-    animate();
+    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    raycasterGun = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    // animate();
 
 }
 
 
 
 function onResourcesLoaded() {
-    objects['gun'] = models.gun.mesh
-    objects['gun'].position.set(3, -3, -6);
+    //gun model
+    objects['gun'] = models.gun.mesh.clone()
+    objects['gun'].position.set(3, -3, -7);
     objects['gun'].rotation.set(Math.PI, 0, Math.PI);
     objects['gun'].scale.set(100, 100, 100);
     camera.add(objects['gun'])
+
+    //fountain 
+    objects['fountainRoundDetail'] = models.fountainRoundDetail.mesh.clone()
+    objects['fountainRoundDetail'].position.set(150, 5, 145);
+    objects['fountainRoundDetail'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['fountainRoundDetail'].scale.set(30, 30, 30)
+    scene.add(objects['fountainRoundDetail'])
+    
+    //palm 
+    objects['palmShort'] = models.palmShort.mesh.clone()
+    objects['palmShort'].position.set(140, 5, 70);
+    objects['palmShort'].rotation.set(Math.PI, 34, Math.PI * 3);
+    objects['palmShort'].scale.set(2, 2, 2)
+    scene.add(objects['palmShort'])
+    
+    objects['palmShort1'] = models.palmShort.mesh.clone()
+    objects['palmShort1'].position.set(145, 5, 160);
+    objects['palmShort1'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['palmShort1'].scale.set(3, 3, 3)
+    scene.add(objects['palmShort1'])
+    
+    objects['palmLong'] = models.palmLong.mesh.clone()
+    objects['palmLong'].position.set(130, 5, 180);
+    objects['palmLong'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['palmLong'].scale.set(3, 3, 3)
+    scene.add(objects['palmLong'])
+    objects['palmLong1'] = models.palmLong.mesh.clone()
+    objects['palmLong1'].position.set(80, 5, 91);
+    objects['palmLong1'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['palmLong1'].scale.set(2, 2, 2)
+    scene.add(objects['palmLong1'])
+
+
+    //lantern
+    objects['lantern'] = models.lantern.mesh.clone()
+    objects['lantern'].position.set(218, 5, 150);
+    objects['lantern'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['lantern'].scale.set(25, 25, 25)
+    scene.add(objects['lantern'])
+    
+    
+    //stallGreen
+    objects['stallGreen'] = models.stallGreen.mesh.clone()
+    objects['stallGreen'].position.set(194, 5, 184);
+    objects['stallGreen'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['stallGreen'].scale.set(25, 25, 25)
+    scene.add(objects['stallGreen'])
+
+
+    //tree
+    objects['tree'] = models.tree.mesh.clone()
+    objects['tree'].position.set(200, 5, 112);
+    objects['tree'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['tree'].scale.set(25, 25, 25)
+    scene.add(objects['tree'])
+    
+    
+    objects['tree1'] = models.tree.mesh.clone()
+    objects['tree1'].position.set(71, 5, 154);
+    objects['tree1'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['tree1'].scale.set(30, 30, 30)
+    scene.add(objects['tree1'])
+    
+    
+    //cartHigh
+    objects['cartHigh'] = models.cartHigh.mesh.clone()
+    objects['cartHigh'].position.set(168, 5, 87);
+    objects['cartHigh'].rotation.set(Math.PI, 90, Math.PI * 3);
+    objects['cartHigh'].scale.set(25, 25, 25)
+    scene.add(objects['cartHigh'])
+    
+    
+    //tower
+    objects['tower'] = models.tower.mesh.clone()
+    objects['tower'].position.set(256, 5, 38);
+    objects['tower'].rotation.set(Math.PI, 45, Math.PI * 3);
+    objects['tower'].scale.set(3, 3,3)
+    scene.add(objects['tower'])
+    //gate
+    objects['wallNarrowGate'] = models.wallNarrowGate.mesh.clone()
+    objects['wallNarrowGate'].position.set(130, 5, 31);
+    objects['wallNarrowGate'].rotation.set(Math.PI, 30, Math.PI * 3);
+    objects['wallNarrowGate'].scale.set(4, 4,4)
+    scene.add(objects['wallNarrowGate'])
+    //tractor
+    objects['tractorShovel'] = models.tractorShovel.mesh.clone()
+    objects['tractorShovel'].position.set(54, 5, 236);
+    objects['tractorShovel'].rotation.set(Math.PI, 5, Math.PI * 3);
+    objects['tractorShovel'].scale.set(30, 30,30)
+    scene.add(objects['tractorShovel'])
+    // cart
+    objects['cart'] = models.cart.mesh.clone()
+    objects['cart'].position.set(106, 5, 216);
+    objects['cart'].rotation.set(Math.PI, 5, Math.PI * 3);
+    objects['cart'].scale.set(30, 30,30)
+    scene.add(objects['cart'])
+    //rock
+    objects['rockLarge'] = models.rockLarge.mesh.clone()
+    objects['rockLarge'].position.set(29, 5, 103);
+    objects['rockLarge'].rotation.set(Math.PI, 5, Math.PI * 3);
+    objects['rockLarge'].scale.set(30, 30,30)
+    scene.add(objects['rockLarge'])
+    //portal
+    objects['portal'] = models.portal.mesh.clone()
+    objects['portal'].position.set(20, 5, 191);
+    objects['portal'].rotation.set(Math.PI, 5, Math.PI * 3);
+    objects['portal'].scale.set(4, 4,4)
+    scene.add(objects['portal'])
+
+//race car
+objects['race'] = models.race.mesh.clone()
+objects['race'].position.set(60, 5, 40);
+objects['race'].rotation.set(Math.PI, 90, Math.PI * 3);
+objects['race'].scale.set(30, 30, 30)
+scene.add(objects['race'])
+//spacecraft
+objects['spaceCraft6'] = models.spaceCraft6.mesh.clone()
+objects['spaceCraft6'].position.set(248, 5, 248);
+objects['spaceCraft6'].rotation.set(Math.PI, 90, Math.PI * 3);
+objects['spaceCraft6'].scale.set(5, 5, 5)
+scene.add(objects['spaceCraft6'])
+//rockStall
+objects['rocksTallOre'] = models.rocksTallOre.mesh.clone()
+objects['rocksTallOre'].position.set(258, 5, 131);
+objects['rocksTallOre'].rotation.set(Math.PI, 90, Math.PI * 3);
+objects['rocksTallOre'].scale.set(5, 5, 5)
+scene.add(objects['rocksTallOre'])
+
+//satellite
+objects['satelliteDishLarge'] = models.satelliteDishLarge.mesh.clone()
+objects['satelliteDishLarge'].position.set(133, 5, 271);
+objects['satelliteDishLarge'].rotation.set(Math.PI, 3, Math.PI * 3);
+objects['satelliteDishLarge'].scale.set(5, 5, 5)
+scene.add(objects['satelliteDishLarge'])
+
+
+
+
+    
+    
+    
+
+
+    // scene.add(sphereBody)
+  
 }
-
-
-
 
 
 
@@ -600,19 +776,53 @@ function animate() {
     // if(RESOURCES_LOADED){
     requestAnimationFrame(animate);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    // cube.rotation.x += 0.01;
+    // cube.rotation.y += 0.01;
 
-
+    // if (camera.position.x > 50) {
+    //     moveForward = false;
+    //     moveBackward = false;
+    //     moveLeft = false;
+    //     moveRight = false;
+    // }
 
     if (controls.isLocked === true) {
 
-        // raycaster.ray.origin.copy(controls.getObject().position);
-        // raycaster.ray.origin.y -= 10;
 
-        // var intersections = raycaster.intersectObjects(objects);
 
-        // var onObject = intersections.length > 0;
+    // updatePhysics();
+
+
+
+
+        raycaster.ray.origin.copy(controls.getObject().position);
+        raycaster.ray.origin.y -= 10;
+        
+
+        raycasterGun.ray.origin.copy(controls.getObject().position);
+        raycasterGun.ray.origin.z -= 10;
+        raycasterGun.ray.origin.x -= 20;
+        raycasterGun.ray.origin.y -= 0 ;
+
+
+
+
+
+        var intersections = raycaster.intersectObjects(collidableMeshListObjects);
+        // var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
+
+        var onObject = intersections.length > 0;
+
+        // if (intersectionsGun.length > 0)
+        // {
+        //     console.log("COLLSION")
+        // }
+
+
+
+
+
+        
 
         var time = performance.now();
         var delta = (time - prevTime) / 1000;
@@ -620,7 +830,8 @@ function animate() {
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
 
-        velocity.y -= 9.8 * 65.0 * delta; // 100.0 = mass
+        //down acceleration
+        velocity.y -= 3; // 100.0 = mass
 
         direction.z = Number(moveForward) - Number(moveBackward);
         direction.x = Number(moveRight) - Number(moveLeft);
@@ -632,10 +843,11 @@ function animate() {
             objects["gun"].position.z
         );
 
+        
         //reload animation
 
 
-        if(ammo === 0){
+        if (ammo === 0) {
             document.getElementsByClassName('ammo-box')[0].classList.remove('active-ammo')
             document.getElementsByClassName('ammo-box')[1].classList.add('active-ammo')
 
@@ -643,37 +855,36 @@ function animate() {
 
 
 
-
-
-
-
-
-
-
-
         if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+
+
+
         if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
 
-        // if (onObject === true) {
+        if (onObject === true) {
 
-        //     velocity.y = Math.max(0, velocity.y);
-        //     canJump = true;
+            velocity.y = Math.max(0, velocity.y);
+            canJump = true;
 
-        // }
+        }
 
         controls.moveRight(-velocity.x * delta);
         controls.moveForward(-velocity.z * delta);
 
         controls.getObject().position.y += (velocity.y * delta); // new behavior
 
-        if (controls.getObject().position.y < 10) {
+        // if (controls.getObject().position.y < 15) {
 
-            velocity.y = 0;
-            controls.getObject().position.y = 10;
+        //     velocity.y = 0;
+        // controls.getObject().position.y = 10;
 
-            canJump = true;
+        //     canJump = true;
 
-        }
+        // }
+
+
+
+
 
         for (let i = 0; i < bullets.length; i += 1) {
             if (bullets[i] === undefined) continue;
@@ -684,7 +895,7 @@ function animate() {
             collision(bullets[i])
             bullets[i].position.add(bullets[i].velocity);
         }
-        
+
 
         prevTime = time;
 
@@ -698,7 +909,7 @@ function collision(bullet) {
     var originPoint = bullet.position.clone();
     for (var vertexIndex = 0; vertexIndex < bullet.geometry.vertices.length; vertexIndex++) {
         var ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
-        var collisionResults = ray.intersectObjects(collidableMeshList);
+        var collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
             console.log('hit')
             targetHit.play();
@@ -708,8 +919,45 @@ function collision(bullet) {
     }
 }
 
-function render() {
 
+
+
+
+
+
+
+
+
+/////building the while map
+function setAllBarriers() {
+    
+    const wall1Texture= new THREE.TextureLoader().load('./grass.jpg')
+    
+    let wall1 = new THREE.Mesh(
+        new THREE.BoxGeometry(50, 10, 4),
+        new THREE.MeshBasicMaterial({
+            map: wall1Texture,
+            wireframe: false
+        })
+    )
+  
+    wall1.position.set(40,10,0)
+    collidableMeshListWalls.push(wall1)
+    scene.add(wall1)
+
+}
+//////////
+
+
+
+
+
+
+
+function render() {
+    xyz.children[0].innerHTML = 'X:' + camera.position.x
+    xyz.children[1].innerHTML = 'Y:' + camera.position.y
+    xyz.children[2].innerHTML = 'Z:' + camera.position.z
     // controls.update(clock.getDelta());
     renderer.render(scene, camera);
 
@@ -724,9 +972,11 @@ function onWindowResize() {
 }
 
 
-window.addEventListener('resize', onWindowResize, false)
+window.addEventListener('resize', onWindowResize, false);
 
 window.onload = init;
+
+animate();
 
 
 
