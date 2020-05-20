@@ -211,7 +211,6 @@ function init() {
         RESOURCES_LOADED = true;
 
         onResourcesLoaded();
-        console.log(scene)
     }
 
 
@@ -768,8 +767,10 @@ function onResourcesLoaded() {
     setTargets()
 
     scene.traverse(function(element) {
-        element.castShadow = true;
-        element.receiveShadow = true;
+        if (!(element instanceof THREE.AmbientLight)) {
+            element.castShadow = true;
+            element.receiveShadow = true;
+        }
     })
 
 
@@ -811,7 +812,7 @@ function animate() {
 
 
         var intersections = raycaster.intersectObjects(collidableMeshListObjects);
-        // var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
+        var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
 
         var onObject = intersections.length > 0;
 
@@ -923,7 +924,6 @@ function collision(bullet) {
                 collidableMeshListTargets.splice(index, 1);
             }
             scene.remove(collisionResults[0].object)
-            console.log(collisionResults)
             targetHit.pause();
             targetHit.currentTime = 0;
             targetHit.play();
@@ -1039,7 +1039,6 @@ function setTargets() {
 
 
     targets.sort(() => Math.random() - 0.5);
-    console.log(targets)
     for (let i = 0; i < 5; i++) {
         scene.add(targets[i])
         collidableMeshListTargets.push(targets[i])
