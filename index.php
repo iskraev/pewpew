@@ -1,1 +1,1 @@
-<?php header( 'Location: /index.html', true, 301 ) ;  ?>
+<?php header( 'Location: http://pewpewgame.herokuapp.com/index.html', true, 301 ) ;  ?>
