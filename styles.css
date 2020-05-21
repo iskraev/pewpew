@@ -7,8 +7,8 @@ body{
     position: absolute;
     justify-content: space-evenly;
     align-items: center;
-    bottom: 60px;
-    left: 100px;
+    bottom: 8%;
+    left: 5%;
     /* display: flex; */
     font-size: 2vw;
     /* padding: 20px 0; */
@@ -140,14 +140,64 @@ body, html{
     font-size: 2rem;
 }
 #timer-box{
-      height: 10%;
-      width: 10%;
-      border: 2px solid rgb(255, 45, 45);
-      color: white;
-      background-color: rgb(39, 39, 39);
-      border-radius: 10px;
-      position: absolute;
-      top: 8%;
-      left: 5%;
+    font-size: 1.5vw;
+    height: 14%;
+    width: 16%;
+    border: 2px solid rgb(255, 45, 45);
+    color: white;
+    background-color: rgb(39, 39, 39);
+    border-radius: 10px;
+    position: absolute;
+    top: 8%;
+    left: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+}
+
+p{
+    margin: 0;
+}
+#time{
+    /* padding: 0 10px; */
+    /* width: 100%;
+    
+    justify-content: space-evenly; */
+    /* margin-left: 5px; */
+    /* display: flex; */
+    display: inline-block;
+    position: absolute;
+    margin-left: 5%;
+
+}
+.time-container{
+    width: 100%;
+    
+    
+    /* display: inline; */
+    
+    /* text-align: center; */
+    margin-left: 35%;
+    /* justify-content: space-evenly; */
+
+}
+
+#record-box{
+    font-size: 1.5vw;
+    height: 8%;
+    width: 18%;
+    border: 2px solid rgb(255, 45, 45);
+    color: white;
+    background-color: rgb(39, 39, 39);
+    border-radius: 10px;
+    position: absolute;
+    top: 8%;
+    right: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 
 }

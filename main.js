@@ -18,6 +18,7 @@ let scene, camera, renderer, cube, controls, ambientLight, floorTop, floorBottom
 
 let smoke
 let reload = true;
+let pause = false;
 
 let shotAudio = new Audio('./shot.wav')
 let reloadAudio = new Audio('./reload.wav')
@@ -35,6 +36,7 @@ let playing = false;
 let minutes, seconds, miliseconds;
 let printedTime = ''
 let readyInterval;
+let record = 0;
 
 var raycaster, raycasterGun;
 let timer = 0;
@@ -520,7 +522,7 @@ function init() {
         
 
 
-
+        pause= false;
 
         // instructions.style.display = 'none';
         // blocker.style.display = 'none';
@@ -528,7 +530,8 @@ function init() {
     });
 
     controls.addEventListener('unlock', function () {
-        // moveRight, moveLeft, moveBackward, moveForward = false;
+        
+        pause = true;
         
         // controls.moveRight(0);
         // controls.moveForward(0);
@@ -626,9 +629,11 @@ function init() {
                                 targetsLeft = 5;
                                 document.getElementById('targets-left').innerHTML = targetsLeft;
                                 timerInterval = setInterval(() => {
-                                    timer += (10 / 1000)
-                                    timer.toPrecision(2);
-                                    document.getElementById('time').innerHTML = printTime(timer);
+                                    if(!pause){
+                                        timer += (10 / 1000)
+                                        timer.toPrecision(2);
+                                        document.getElementById('time').innerHTML = printTime(timer);
+                                    }
                                 }, 10)
                                 timerWaiting = false;
                             }, 3000)
@@ -1039,6 +1044,15 @@ function collision(bullet) {
             if(targetsLeft === 0){
                 clearInterval(timerInterval)
                 finish.play();
+                if(record === 0){
+                    record = timer
+                    document.getElementById('record').innerHTML = printTime(record)
+                }else{
+                    if(timer < record){
+                        record = timer;
+                        document.getElementById('record').innerHTML = printTime(record)
+                    }
+                }
             }
 
             const index = collidableMeshListTargets.indexOf(collisionResults[0].object);
