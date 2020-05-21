@@ -422,13 +422,6 @@ function init() {
     scene.add(floorBottom)
     // collidableMeshListObjects.push(mesh1)
 
-    // const texture = new THREE.TextureLoader().load('./back.jpg')
-
-
-    // const material = new THREE.MeshBasicMaterial({
-    //     map: texture
-    // });
-    // cube = new THREE.Mesh(geometry, material);
 
     controls = new PointerLockControls(camera, renderer.domElement);
 
