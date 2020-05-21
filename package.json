@@ -1,0 +1,22 @@
+{
+  "name": "pewpew",
+  "version": "1.0.0",
+  "description": "this is a mini game where you can shoot targets",
+  "main": "main.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iskraev/pewpew.git"
+  },
+  "author": "Dias Iskrayev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iskraev/pewpew/issues"
+  },
+  "homepage": "https://github.com/iskraev/pewpew#readme"
+}
