@@ -20,14 +20,14 @@ let smoke
 let reload = true;
 let pause = false;
 
-let shotAudio = new Audio('./shot.wav')
-let reloadAudio = new Audio('./reload.wav')
-let empty = new Audio('./empty.wav')
-let targetHit = new Audio('target.wav')
-let horn = new Audio('horn.mp3')
-let finish = new Audio('finish.wav')
-let ready = new Audio('ready.wav')
-let go = new Audio('go.wav')
+let shotAudio = new Audio('sounds/shot.wav')
+let reloadAudio = new Audio('sounds/reload.wav')
+let empty = new Audio('sounds/empty.wav')
+let targetHit = new Audio('sounds/target.wav')
+let horn = new Audio('sounds/horn.mp3')
+let finish = new Audio('sounds/finish.wav')
+let ready = new Audio('sounds/ready.wav')
+let go = new Audio('sounds/go.wav')
 
 let timerWaiting = false;
 
@@ -65,8 +65,8 @@ let RESOURCES_LOADED = false;
 
 const models = {
     gun: {
-        obj: 'models/Models/pistolSilencer.obj',
-        mtl: 'models/Models/pistolSilencer.mtl',
+        obj: 'objects/pistolSilencer.obj',
+        mtl: 'objects/pistolSilencer.mtl',
         mesh: null,
         castShadow: false
     },
@@ -336,7 +336,7 @@ function init() {
 
     
     
-    const smokeParticle = new THREE.TextureLoader().load('fire_01.png')
+    const smokeParticle = new THREE.TextureLoader().load('images/fire_01.png')
     // /smokeParticle.alphaMap(0)
     const smokeMesh = new THREE.MeshBasicMaterial({
         map: smokeParticle,
@@ -378,7 +378,7 @@ function init() {
        scene.add(light);
     
     
-    const textureFloor = new THREE.TextureLoader().load('./stone.jpg')
+    const textureFloor = new THREE.TextureLoader().load('images/stone.jpg')
     textureFloor.anisotropy = 16;
     textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
     textureFloor.repeat.set(25, 25);
@@ -422,13 +422,13 @@ function init() {
     scene.add(floorBottom)
     // collidableMeshListObjects.push(mesh1)
 
-    const texture = new THREE.TextureLoader().load('./back.jpg')
+    // const texture = new THREE.TextureLoader().load('./back.jpg')
 
 
-    const material = new THREE.MeshBasicMaterial({
-        map: texture
-    });
-    cube = new THREE.Mesh(geometry, material);
+    // const material = new THREE.MeshBasicMaterial({
+    //     map: texture
+    // });
+    // cube = new THREE.Mesh(geometry, material);
 
     controls = new PointerLockControls(camera, renderer.domElement);
 
@@ -548,7 +548,6 @@ function init() {
             if(RESOURCES_LOADED){
                 controls.lock()
                 if (!playing) {
-                    console.log("TEST")
                     document.getElementById('play-area').style.display = "block";
                     document.getElementById('loading').style.display = "none";
                 }
@@ -1081,7 +1080,7 @@ function collision(bullet) {
 
 function setTargets() {
 
-    const targetImage = new THREE.TextureLoader().load('/target.png')
+    const targetImage = new THREE.TextureLoader().load('images/target.png')
 
     let target = new THREE.Mesh(
         new THREE.BoxGeometry(0.0001, 10, 9, 100),
