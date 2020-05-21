@@ -1,1 +1,1 @@
-<?php header("Location: http://pewpew.iskrayev.com", true, 301); ?>
+<?php header("Location: http://pewpew.herokuapp.com", true, 301); ?>
