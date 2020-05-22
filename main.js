@@ -22,6 +22,11 @@ let smoke
 let reload = true;
 let pause = false;
 
+let playing = false;
+
+let ambientLight, improvedLight
+let light
+
 let shotAudio = new Audio('sounds/shot.wav')
 let reloadAudio = new Audio('sounds/reload.wav')
 let empty = new Audio('sounds/empty.wav')
@@ -31,6 +36,8 @@ let finish = new Audio('sounds/finish.wav')
 let ready = new Audio('sounds/ready.wav')
 let go = new Audio('sounds/go.wav')
 let pewpew = new Audio('sounds/pewpew.mp3')
+
+let audios = [shotAudio, reloadAudio, empty, targetHit, horn, finish, ready, go, pewpew]
 pewpew.loop = true;
 
 let timerWaiting = false;
@@ -185,6 +192,25 @@ const objects = {};
 let targetsLeft = 5
 //main initiazlie function
 function init() {
+    unmute();
+    let shadowsSetting = document.getElementById('shadows')
+    shadowsSetting.addEventListener('change',()=>{
+       if(shadowsSetting.checked){
+           removeShadows();
+       }else{
+            addShadows();
+       }
+    })
+
+
+    let volumeSettings = document.getElementById('volume')
+    volumeSettings.addEventListener('change', () => {
+       if (volumeSettings.checked) {
+           mute();
+       }else{
+            unmute();
+       }
+    })
 
     //set ammo count to the html element
     document.getElementById('ammo').innerHTML = ammo;
@@ -221,7 +247,7 @@ function init() {
     }
 
 
-
+    improvedLight = new THREE.AmbientLight(0xffffff)
 
 
 
@@ -327,9 +353,10 @@ function init() {
     smoke.scale.x = 2
     smoke.scale.y = 2
 
-    scene.add(new THREE.AmbientLight(0x777777));
+    ambientLight = new THREE.AmbientLight(0x777777)
+    scene.add(ambientLight);
 
-    var light = new THREE.DirectionalLight(0xdfebff, 1);
+    light = new THREE.DirectionalLight(0xdfebff, 1);
     light.position.set(-50, 200, -100);
     light.position.multiplyScalar(1.3);
 
@@ -479,12 +506,15 @@ function init() {
     })
     //fires whenever the controller is locked
     controls.addEventListener('lock', function () {
+        playing = true;
         document.getElementById('pause').style.display = 'none';
         pause = true;
+        animate();
 
     });
     //fires whenever the controller is uncloked
     controls.addEventListener('unlock', function () {
+        playing = false;
         if (pause) {
             document.getElementById('pause').style.display = 'flex';
         }
@@ -832,12 +862,7 @@ function onResourcesLoaded() {
     objects['satelliteDishLarge'].scale.set(5, 5, 5)
     scene.add(objects['satelliteDishLarge'])
 
-    scene.traverse(function (element) {
-        if (!(element instanceof THREE.AmbientLight)) {
-            element.castShadow = true;
-            element.receiveShadow = true;
-        }
-    })
+    addShadows();
     console.log(objects['gun'])
 
 }
@@ -847,8 +872,6 @@ function onResourcesLoaded() {
 
 
 function animate() {
-    // if(RESOURCES_LOADED){
-    requestAnimationFrame(animate);
     var time = performance.now();
 
     if (controls.isLocked === true) {
@@ -927,7 +950,13 @@ function animate() {
         prevTime = time;
     }
 
-    render();
+    if (playing) {
+        render();
+        requestAnimationFrame(animate);
+    }
+
+    
+    
 }
 
 function collision(bullet) {
@@ -1048,6 +1077,45 @@ function setTargets() {
 
 }
 
+
+
+function removeShadows(){
+    scene.traverse(function (element) {
+        if (!(element instanceof THREE.AmbientLight)) {
+            element.castShadow = false;
+            element.receiveShadow = false;
+        }
+    })
+    scene.remove(light)
+    scene.remove(ambientLight)
+    
+    scene.add(improvedLight)
+}
+
+
+function addShadows(){
+    scene.add(light)
+    scene.add(ambientLight)
+    scene.remove(improvedLight)
+    scene.traverse(function (element) {
+        if (!(element instanceof THREE.AmbientLight)) {
+            element.castShadow = true;
+            element.receiveShadow = true;
+        }
+    })
+}
+
+function mute(){
+    for (let i = 0; i < audios.length; i++) {
+        audios[i].volume = 0
+    }
+    
+}
+function unmute(){
+    for (let i = 0; i < audios.length; i++) {
+        audios[i].volume = 0.4
+    }
+}
 
 function render() {
     renderer.render(scene, camera);

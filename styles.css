@@ -323,3 +323,69 @@ a:active{
     color: white;
     font-size: 2vw;
 }
+
+#settings{
+    border: 2px solid white;
+    border-radius: 15px;
+    color: white;
+    background-color: rgb(83, 83, 83);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px 20px;
+    height: 60%;
+    text-decoration: none;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+}
+
+.about-settings{
+    text-align: center;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#volume-off{
+    background-color: white;
+    padding: 5px;
+    height: 10px;
+    width: 10px;
+    border: 1px solid black;
+     border-radius: 15px;
+}
+
+#settings label{
+    
+    display: flex;
+    align-items: center;
+
+}
+
+#settings h3{
+    margin: 0;
+}
+
+input[type=checkbox]{
+      /* position: absolute; */
+      /* top: 0;
+      left: 0; */
+      height: 25px;
+      width: 25px;
+      
+      background-color: yellow !important;
+      border-radius: 50%;
+}
+
+
