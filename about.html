@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie-edge">
+    <link rel="stylesheet" href="./styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico?v=2" type="image/x-icon" />
+
+
+    <title>About Pew Pew</title>
+
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <img id='background' src="images/background.jpg" alt="">
+    <div id='about-container'>
+        
+        <div>
+            <h2>About Pew Pew</h2>
+        </div>
+        
+        <div>
+            Hello! My name is <span id='name'><a href="https://www.linkedin.com/in/iskrayev/" target="_blank">Dias Iskrayev</a></span>,creator of 'Pew Pew' project!
+            This game was developed using JavaScript and Three.js library. 
+            The rules are simple. Press <span style="color: rgb(0, 255, 0)">T</span> to turn the timer ON and take down all <span style="color: rgb(255, 73, 73)">5</span> targets as fast as you can!
+            My personal record is <span style="color: rgb(251, 255, 0)">03.58</span> seconds, can you beat it? Let's see! Hint: there is no collision in the
+            game, so bullets can travel throught the walls.
+            And yes, don't fall of the map! 
+            Checkout <span style="color: rgb(0, 0, 0);"><a id='github' href="https://github.com/iskraev/pewpew" target="_blank">GitHub</a></span>
+            for this project.
+        </div>
+
+        <script>
+            let button = document.getElementById('name')
+            let counter = 100;
+            let flip = true;
+            setInterval(()=>{
+                
+                button.style.color = `rgb(${0},${counter},${counter})`
+                if(flip){
+                    counter += 1;
+                    if(counter > 255){
+                        flip = false;
+                    }
+                }else{
+                    counter -= 1;
+                    if(counter < 100){
+                        flip = true;
+                    }
+                }
+            }, 10)
+
+        </script>
+
+        <div><a id='back' href="/index.html">BACK</a></div>
+    </div>
+
+
+
+
+
+
+
+
+</body>
+
+</html>

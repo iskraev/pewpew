@@ -19,6 +19,7 @@ let scene, camera, renderer, cube, controls, ambientLight, floorTop, floorBottom
 let smoke
 let reload = true;
 let pause = false;
+let canJump2 = false;
 
 let shotAudio = new Audio('sounds/shot.wav')
 let reloadAudio = new Audio('sounds/reload.wav')
@@ -38,7 +39,7 @@ let printedTime = ''
 let readyInterval;
 let record = 0;
 
-var raycaster, raycasterGun;
+var raycaster, raycasterModel;
 let timer = 0;
 let timerInterval;
 let collidableMeshListObjects = []
@@ -217,7 +218,7 @@ function init() {
 
     loadingManager = new THREE.LoadingManager();
 
-    loadingManager.onProgress = function(e, b){
+    loadingManager.onProgress = function (e, b) {
         document.getElementById('loading-percent').innerHTML = Math.floor((b / 38) * 100) + '%';
     }
 
@@ -236,52 +237,52 @@ function init() {
 
     //set up sky
 
-    let sky = new Sky();
-    sky.scale.setScalar(450000);
-    sky.castShadow = true;
-    sky.receiveShadow = true;
-    scene.add(sky);
+    // let sky = new Sky();
+    // sky.scale.setScalar(450000);
+    // sky.castShadow = true;
+    // sky.receiveShadow = true;
+    // scene.add(sky);
 
-    // Add Sun Helper
-    let sunSphere = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(20000, 16, 8),
-        new THREE.MeshBasicMaterial({
-            color: 0xffffff
-        })
-    );
-    sunSphere.position.y = -700000;
-    sunSphere.visible = false;
-    scene.add(sunSphere);
+    // // Add Sun Helper
+    // let sunSphere = new THREE.Mesh(
+    //     new THREE.SphereBufferGeometry(20000, 16, 8),
+    //     new THREE.MeshBasicMaterial({
+    //         color: 0xffffff
+    //     })
+    // );
+    // sunSphere.position.y = -700000;
+    // sunSphere.visible = false;
+    // scene.add(sunSphere);
 
-    /// GUI
+    // /// GUI
 
-    var effectController = {
-        turbidity: 10,
-        rayleigh: 2,
-        mieCoefficient: 0.005,
-        mieDirectionalG: 0.8,
-        luminance: 1,
-        inclination: 0.49, // elevation / inclination
-        azimuth: 0.25, // Facing front,
-        sun: !true
-    };
+    // var effectController = {
+    //     turbidity: 10,
+    //     rayleigh: 2,
+    //     mieCoefficient: 0.005,
+    //     mieDirectionalG: 0.8,
+    //     luminance: 1,
+    //     inclination: 0.49, // elevation / inclination
+    //     azimuth: 0.25, // Facing front,
+    //     sun: !true
+    // };
 
-    var distance = 400000;
+    // var distance = 400000;
 
-    var uniforms = sky.material.uniforms;
-    uniforms["turbidity"].value = 10;
-    uniforms["rayleigh"].value = 2;
-    uniforms["mieCoefficient"].value = 0.005;
-    uniforms["mieDirectionalG"].value = 0.8;
-    uniforms["luminance"].value = 1;
-    var theta = Math.PI * (0.1 - 0.5);
-    var phi = 2 * Math.PI * (0.25 - 0.5);
+    // var uniforms = sky.material.uniforms;
+    // uniforms["turbidity"].value = 10;
+    // uniforms["rayleigh"].value = 2;
+    // uniforms["mieCoefficient"].value = 0.005;
+    // uniforms["mieDirectionalG"].value = 0.8;
+    // uniforms["luminance"].value = 1;
+    // var theta = Math.PI * (0.1 - 0.5);
+    // var phi = 2 * Math.PI * (0.25 - 0.5);
 
-    sunSphere.position.x = distance * Math.cos(phi);
-    sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
-    sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
-    uniforms["sunPosition"].value.copy(sunSphere.position);
-    sunSphere.visible = effectController.sun;
+    // sunSphere.position.x = distance * Math.cos(phi);
+    // sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
+    // sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
+    // uniforms["sunPosition"].value.copy(sunSphere.position);
+    // sunSphere.visible = effectController.sun;
 
 
 
@@ -332,24 +333,24 @@ function init() {
         })(_key);
     }
 
-    // // const geometry = new THREE.BoxGeometry(10, 10, 10);
+    const geometry = new THREE.BoxGeometry(2, 20, 2);
     // const geometry = new THREE.SphereGeometry(5, 30, 30);
-    // const cubeMesh = new THREE.MeshBasicMaterial({
-    //     color: 0x00ff00,
-    //     transparent: true,
-    //     opacity: 1
-    // })
+    const cubeMesh = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        transparent: true,
+        opacity: 1
+    })
 
-    // cube = new THREE.Mesh(
-    //     geometry,
-    //     cubeMesh
+    cube = new THREE.Mesh(
+        geometry,
+        cubeMesh
 
-    // )
+    )
 
-    // scene.add(cube)
+    scene.add(cube)
 
-    
-    
+
+
     const smokeParticle = new THREE.TextureLoader().load('images/fire_01.png')
     // /smokeParticle.alphaMap(0)
     const smokeMesh = new THREE.MeshBasicMaterial({
@@ -359,39 +360,39 @@ function init() {
         opacity: 1
     })
     // smokeMesh.alphaMap = "white";
-    
+
     smoke = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 10, 10, 10),
         smokeMesh
     )
-    
-    
+
+
     smoke.scale.x = 2
     smoke.scale.y = 2
 
-       scene.add(new THREE.AmbientLight(0x777777));
+    scene.add(new THREE.AmbientLight(0x777777));
 
-       var light = new THREE.DirectionalLight(0xdfebff, 1);
-       light.position.set(-50, 200, -100);
-       light.position.multiplyScalar(1.3);
+    // var light = new THREE.DirectionalLight(0xdfebff, 1);
+    // light.position.set(-50, 200, -100);
+    // light.position.multiplyScalar(1.3);
 
-       light.castShadow = true;
+    // // light.castShadow = true;
 
-       light.shadow.mapSize.width = 1024;
-       light.shadow.mapSize.height = 1024;
+    // light.shadow.mapSize.width = 1024;
+    // light.shadow.mapSize.height = 1024;
 
-       var d = 300;
+    // var d = 300;
 
-       light.shadow.camera.left = -d;
-       light.shadow.camera.right = d;
-       light.shadow.camera.top = d;
-       light.shadow.camera.bottom = -d;
+    // light.shadow.camera.left = -d;
+    // light.shadow.camera.right = d;
+    // light.shadow.camera.top = d;
+    // light.shadow.camera.bottom = -d;
 
-       light.shadow.camera.far = 1000;
+    // light.shadow.camera.far = 1000;
 
-       scene.add(light);
-    
-    
+    // scene.add(light);
+
+
     const textureFloor = new THREE.TextureLoader().load('images/stone.jpg')
     textureFloor.anisotropy = 16;
     textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
@@ -415,8 +416,8 @@ function init() {
         side: THREE.BackSide
     });
 
-    
-     floorTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
+
+    floorTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
     floorTop.position.y = 5;
     floorTop.position.x = 150;
     floorTop.position.z = 145;
@@ -425,11 +426,11 @@ function init() {
 
 
     floorBottom = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial2);
-     floorBottom.position.y = 4;
-     floorBottom.position.x = 150;
-     floorBottom.position.z = 145;
-     floorBottom.rotation.x = -Math.PI / 2;
-     floorBottom.receiveShadow = true;
+    floorBottom.position.y = 4;
+    floorBottom.position.x = 150;
+    floorBottom.position.z = 145;
+    floorBottom.rotation.x = -Math.PI / 2;
+    floorBottom.receiveShadow = true;
 
 
     scene.add(floorTop)
@@ -442,8 +443,8 @@ function init() {
     let allowShot = true;
     document.addEventListener('click', () => {
         // controls.lock();
-       
-        if(controls.isLocked){
+
+        if (controls.isLocked) {
             if (ammo > 0 && allowShot) {
                 shotAudio.pause();
                 shotAudio.currentTime = 0;
@@ -526,10 +527,10 @@ function init() {
     })
 
     controls.addEventListener('lock', function () {
-        
 
 
-        pause= false;
+
+        pause = false;
 
         // instructions.style.display = 'none';
         // blocker.style.display = 'none';
@@ -537,12 +538,12 @@ function init() {
     });
 
     controls.addEventListener('unlock', function () {
-        
+
         pause = true;
-        
+
         // controls.moveRight(0);
         // controls.moveForward(0);
-        
+
 
     });
 
@@ -550,9 +551,9 @@ function init() {
 
     var onKeyDown = function (event) {
 
-        if(event.keyCode === 13){
-           
-            if(RESOURCES_LOADED){
+        if (event.keyCode === 13) {
+
+            if (RESOURCES_LOADED) {
                 controls.lock()
                 if (!playing) {
                     document.getElementById('play-area').style.display = "block";
@@ -565,7 +566,7 @@ function init() {
 
 
 
-        if(controls.isLocked){
+        if (controls.isLocked) {
             switch (event.keyCode) {
 
                 case 38: // up
@@ -591,6 +592,7 @@ function init() {
                 case 32: // space
                     if (canJump === true) velocity.y += 90;
                     canJump = false;
+                    canJump2 = true;
                     break;
                 case 82:
                     if (reload === true) {
@@ -621,40 +623,40 @@ function init() {
 
 
                     break;
-                    case 84:
-                        if (!timerWaiting) {
-                            clearTargets()
+                case 84:
+                    if (!timerWaiting) {
+                        clearTargets()
+                        ready.play();
+
+
+                        setTimeout(() => {
+                            clearInterval(readyInterval)
+                            setTargets();
+                            horn.play()
+                            go.play();
+                            targetsLeft = 5;
+                            document.getElementById('targets-left').innerHTML = targetsLeft;
+                            timerInterval = setInterval(() => {
+                                if (!pause) {
+                                    timer += (10 / 1000)
+                                    timer.toPrecision(2);
+                                    document.getElementById('time').innerHTML = printTime(timer);
+                                }
+                            }, 10)
+                            timerWaiting = false;
+                        }, 3000)
+
+                        readyInterval = setInterval(() => {
                             ready.play();
+                        }, 1000)
+                        timerWaiting = true
+                    }
 
 
-                            setTimeout(() => {
-                                clearInterval(readyInterval)
-                                setTargets();
-                                horn.play()
-                                go.play();
-                                targetsLeft = 5;
-                                document.getElementById('targets-left').innerHTML = targetsLeft;
-                                timerInterval = setInterval(() => {
-                                    if(!pause){
-                                        timer += (10 / 1000)
-                                        timer.toPrecision(2);
-                                        document.getElementById('time').innerHTML = printTime(timer);
-                                    }
-                                }, 10)
-                                timerWaiting = false;
-                            }, 3000)
 
-                            readyInterval = setInterval(() => {
-                                ready.play();
-                            }, 1000)
-                            timerWaiting = true
-                        }
-                        
-
-                        
 
                     break;
-              
+
 
             }
         }
@@ -693,37 +695,39 @@ function init() {
     document.addEventListener('keyup', onKeyUp, false);
 
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
-    raycasterGun = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    raycasterModel = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
     // animate();
 
 }
-function clearTargets(){
+
+function clearTargets() {
     for (let i = 0; i < collidableMeshListTargets.length; i++) {
         scene.remove(collidableMeshListTargets[i])
-        
+
     }
     collidableMeshListTargets = [];
     clearInterval(timerInterval)
     timer = 0;
 }
-function printTime(time){
-    minutes = Math.floor(time/ 60)
+
+function printTime(time) {
+    minutes = Math.floor(time / 60)
     seconds = Math.floor(time) % 60;
     miliseconds = Math.floor((time - Math.floor(time)) * 100);
     printedTime = ''
-    if(minutes < 10){
+    if (minutes < 10) {
         printedTime += `0${minutes}:`
-    }else{
+    } else {
         printedTime += `${minutes}:`
     }
-    if(seconds < 10){
-        printedTime += `0${seconds}.`
-    }else{
-        printedTime += `${seconds}.`
+    if (seconds < 10) {
+        printedTime += `0${seconds}:`
+    } else {
+        printedTime += `${seconds}:`
     }
     if (miliseconds < 10) {
         printedTime += `0${miliseconds}`
-    }else{
+    } else {
         printedTime += `${miliseconds}`
     }
 
@@ -879,23 +883,23 @@ function onResourcesLoaded() {
     let allObjects = Object.keys(objects)
     for (let i = 1; i < allObjects.length; i++) {
         for (let j = 0; j < objects[allObjects[i]].children.length; j++) {
-            
+
             collidableMeshListObjects.push(objects[allObjects[i]].children[j])
-            
+
         }
     }
 
     // console.log(objects)
 
-    
 
-    scene.traverse(function(element) {
+
+    scene.traverse(function (element) {
         if (!(element instanceof THREE.AmbientLight)) {
             element.castShadow = true;
             element.receiveShadow = true;
         }
     })
-console.log(objects['gun'])
+    console.log(cube.geometry.vertices)
 
 
 
@@ -912,14 +916,117 @@ console.log(objects['gun'])
 function animate() {
     // if(RESOURCES_LOADED){
     requestAnimationFrame(animate);
-   
+
     if (controls.isLocked === true) {
 
+    var intersections = raycaster.intersectObjects([floorTop]);
+    // var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
+
+    var onObject = intersections.length > 0;
 
 
-        if(camera.position.y < -150){
-            camera.position.set(21, 25, 31)
+        // console.log(camera.getWorldDirection())
+        for (var vertexIndex = 0; vertexIndex < cube.geometry.vertices.length; vertexIndex++) {
+            var localVertex = cube.geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(cube.matrix);
+
+            var directionVector = globalVertex.sub(cube.position);
+
+            var ray = new THREE.Raycaster(cube.position, directionVector.clone().normalize());
+            var collisionResults = ray.intersectObjects(collidableMeshListObjects);
+
+
+            //cube check the models under
+
+
+            raycasterModel.ray.origin.copy(controls.getObject().position);
+            raycasterModel.ray.origin.y -= 11;
+            var intersectionsModel = raycasterModel.intersectObjects(collidableMeshListObjects);
+             // var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
+
+            var onModel = intersectionsModel.length > 0;
+            
+
+
+
+
+
+
+          
+                if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+
+                    // camera.position.set(
+
+                    //     camera.position.x - direction.x,
+                    //     camera.position.y - direction.y,
+                    //     camera.position.z - direction.z,
+
+                    // )
+                    // camera.position.set(
+                    //    posX,
+                    //    posY,
+                    //    posZ
+
+                    // )
+                     
+                    if (!onModel) {
+                        var time = performance.now();
+                        var delta = (time - prevTime) / 1000;
+                        // velocity.x -= velocity.x * 10.0 * delta;
+                        // velocity.z -= velocity.z * 10.0 * delta;
+                        velocity.x = 0// velocity.x * 10.0 * delta;
+                        velocity.z = 0//velocity.z * 10.0 * delta;
+                        // controls.getObject().position.x -= direction.x * delta;
+                        // controls.getObject().position.z -= direction.z * delta;
+                        controls.moveRight(velocity.x * delta);
+                        controls.moveForward(velocity.z * delta);
+                        // velocity.y = 3.01;
+                        canJump = true;
+                        canJump2 = false
+                       
+
+                    }else{
+                        if(!canJump2){
+                            velocity.y = 3.01;
+                            console.log('lo')
+                        }
+                       
+                    }
+                    
+
+
+                    //  console.log('test')
+                }
         }
+
+        // direction.z = Number(moveForward) - Number(moveBackward);
+        // direction.x = Number(moveRight) - Number(moveLeft);
+
+        // let worldDirection = camera.getWorldDirection();
+       
+        // if(moveForward){
+        //     camera.position.x += Math.floor(worldDirection.x)
+        //     camera.position.z += Math.floor(worldDirection.z)
+        // }
+        // if(moveLeft){
+        //     camera.position.x += worldDirection.z
+        //     camera.position.z -= worldDirection.x
+        //     // camera.position.z += worldDirection.x + worldDirection.z
+
+            
+        // }
+        // if(moveRight){
+        //     camera.position.x -= worldDirection.z
+        //     camera.position.z += worldDirection.x
+
+        // }
+        // if(moveBackward){
+        //     camera.position.x -= worldDirection.x
+        //     camera.position.z -= worldDirection.z
+        // }
+        
+
+
 
         // updatePhysics();
 
@@ -930,19 +1037,19 @@ function animate() {
         raycaster.ray.origin.y -= 10;
 
 
-        raycasterGun.ray.origin.copy(controls.getObject().position);
-        raycasterGun.ray.origin.z -= 10;
-        raycasterGun.ray.origin.x -= 20;
-        raycasterGun.ray.origin.y -= 0;
+        // raycasterGun.ray.origin.copy(controls.getObject().position);
+        // raycasterGun.ray.origin.z -= 10;
+        // raycasterGun.ray.origin.x -= 20;
+        // raycasterGun.ray.origin.y -= 0;
 
 
 
 
 
-        var intersections = raycaster.intersectObjects([floorTop]);
-        var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
+        // var intersections = raycaster.intersectObjects([floorTop].concat(collidableMeshListObjects));
+        // // var intersectionsGun = raycasterGun.intersectObjects(collidableMeshListWalls);
 
-        var onObject = intersections.length > 0;
+        // var onObject = intersections.length > 0;
 
         // if (intersectionsGun.length > 0)
         // {
@@ -1012,7 +1119,11 @@ function animate() {
         //     canJump = true;
 
         // }
-
+        cube.position.set(
+            camera.position.x,
+            camera.position.y - 10,
+            camera.position.z
+        )
 
 
 
@@ -1030,11 +1141,16 @@ function animate() {
 
         prevTime = time;
 
-    }else{
+    } else {
         //  controls.moveRight(0);
         //  controls.moveForward(0);
-         moveRight, moveLeft, moveBackward, moveForward = false;
-         velocity.x, velocity.y, velocity.z = 0;
+        moveRight,
+        moveLeft,
+        moveBackward,
+        moveForward = false;
+        velocity.x,
+        velocity.y,
+        velocity.z = 0;
     }
 
 
@@ -1047,19 +1163,19 @@ function collision(bullet) {
         var ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
         var collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
-            
-            
+
+
             targetsLeft -= 1;
             document.getElementById('targets-left').innerHTML = targetsLeft;
 
-            if(targetsLeft === 0){
+            if (targetsLeft === 0) {
                 clearInterval(timerInterval)
                 finish.play();
-                if(record === 0){
+                if (record === 0) {
                     record = timer
                     document.getElementById('record').innerHTML = printTime(record)
-                }else{
-                    if(timer < record){
+                } else {
+                    if (timer < record) {
                         record = timer;
                         document.getElementById('record').innerHTML = printTime(record)
                     }
@@ -1161,7 +1277,7 @@ function setTargets() {
     for (let i = 0; i < 5; i++) {
         scene.add(targets[i])
         collidableMeshListTargets.push(targets[i])
-        
+
     }
 
 
@@ -1181,7 +1297,7 @@ function render() {
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix()
-    
+
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     // controls.handleResize();

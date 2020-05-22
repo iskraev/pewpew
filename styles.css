@@ -1,6 +1,9 @@
 body{
     font-family: 'Fredoka One',
     cursive;
+    cursor: url('./images/favicon-32x32.png'),
+    default;
+    
 }
 .ammo-box{
     display: none;
@@ -19,6 +22,7 @@ body{
     background-color: rgb(39, 39, 39);
     border-radius: 10px;
 }
+
 
 
 .ammo-box img{
@@ -77,20 +81,25 @@ body, html{
 }
 
 #logo{
-    position: absolute;
+    object-fit: none;
+    /* position: absolute;
     left: 0;
     right: 0;
     margin: auto;
-    top: 5%;
+    top: 5%; */
     
 
+}
+
+#main-group{
+    display: flex;
 }
 
 #loading-container{
     border: 2px solid white;
     border-radius: 15px;
     color: white;
-    position: absolute;
+    /* position: absolute; */
     width: 35%;
     height: 55%;
     background-color: rgb(83, 83, 83);
@@ -199,5 +208,63 @@ p{
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
+
+#about-container{
+    width: 50%;
+    height: 80%;
+    border: 2px solid white;
+    border-radius: 15px;
+    color: white;
+    position: absolute;
+    background-color: rgb(83, 83, 83);
+    top: 10%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+#about-container div:nth-child(2){
+     border: 2px solid white;
+     border-radius: 15px;
+     width: 80%;
+     padding: 15px 15px;
+    letter-spacing: 1.5px;
+    line-height: 2.5vw;
+
+}
+#back{
+    text-decoration: none;
+    color: rgb(204, 204, 204);
+    font-size: 3vw;
+}
+
+#back:hover{
+    color: white;
+    cursor: url('./images/favicon-32x32.png'),
+    default;
+}
+
+a:active{
+    color: rgb(255, 87, 87);
+}
+
+#github{
+    color: black;
+}
+
+#github:hover{
+    color: khaki;
+
 
 }
