@@ -29,6 +29,7 @@ let finish = new Audio('sounds/finish.wav')
 let ready = new Audio('sounds/ready.wav')
 let go = new Audio('sounds/go.wav')
 let pewpew = new Audio('sounds/pewpew.mp3')
+pewpew.loop = true;
 
 let timerWaiting = false;
 
@@ -373,6 +374,7 @@ function init() {
        scene.add(new THREE.AmbientLight(0x777777));
 
        var light = new THREE.DirectionalLight(0xdfebff, 1);
+    //    var light = new THREE.DirectionalLight(0x777777, 1);
        light.position.set(-50, 200, -100);
        light.position.multiplyScalar(1.3);
 
@@ -626,25 +628,30 @@ function init() {
                         if (!timerWaiting) {
                             clearTargets()
                             ready.play();
-
-
+                            timer = 0;
+                            pewpew.pause();
                             setTimeout(() => {
                                 clearInterval(readyInterval)
                                 setTargets();
                                 horn.play()
                                 go.play();
-                                
+                               
                                 pewpew.play();
                                 targetsLeft = 5;
                                 document.getElementById('targets-left').innerHTML = targetsLeft;
                                 timerInterval = setInterval(() => {
-                                    if(!pause){
+                                    if(pause){
                                         if(timer > 3600){
                                             timer = 0;
                                             document.getElementById('targets-left').innerHTML = 0;
                                             document.getElementById('time').innerHTML = '00:00.00';
                                             clearTargets()
                                             clearInterval(timerInterval);
+                                            
+
+
+                                            pewpew.pause();
+                                            pewpew.currentTime = 0;
                                             finish.play();
                                         }else{
                                             timer += (10 / 1000)
@@ -1060,6 +1067,8 @@ function collision(bullet) {
 
             if(targetsLeft === 0){
                 clearInterval(timerInterval)
+                pewpew.pause();
+                pewpew.currentTime = 0;
                 finish.play();
                 if(record === 0){
                     record = timer
