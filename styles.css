@@ -81,18 +81,41 @@ body, html{
 }
 
 #logo{
-    object-fit: none;
+    /* object-fit: none; */
     /* position: absolute;
     left: 0;
     right: 0;
     margin: auto;
     top: 5%; */
+    width: 15vw;
+    border: 2px solid white;
+    border-radius: 15px;
+    backdrop-filter: brightness(80%);
     
 
 }
 
 #main-group{
+    position: absolute;
+    height: 100%;
+    top: 0;
     display: flex;
+    left: 0;
+    right: 0;
+    margin: auto;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#about-rules {
+    font-size: 2.5vw;
+    color: rgb(255, 255, 255);
+    text-shadow: 3px 3px #000000;
+}
+
+#about-rules:hover{
+    color: rgb(0, 255, 0);
+    cursor: url('./images/favicon-32x32.png'), default;
 }
 
 #loading-container{
@@ -101,27 +124,32 @@ body, html{
     color: white;
     /* position: absolute; */
     width: 35%;
-    height: 55%;
+    height: 70%;
     background-color: rgb(83, 83, 83);
-    left: 0;
-    right: 0;
-    bottom: 7%;
-    margin: auto;
+    padding-bottom: 30px;
+    
+    /* left: 0;
+    right: 0; */
+    /* bottom: 7%; */
+    /* margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-evenly; */
 }
 #instructions{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     height: 80%;
+   
+   
 }
 
 
 #instructions > h2{
     margin: 0;
+    padding-bottom: 10px;
     /* margin-bottom: 20px; */
 }
 .moves{
@@ -265,6 +293,4 @@ a:active{
 
 #github:hover{
     color: khaki;
-
-
 }

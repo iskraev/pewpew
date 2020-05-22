@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,83 +11,103 @@
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
     <link rel="shortcut icon" href="favicon.ico?v=2" type="image/x-icon" />
 
-    
+
     <title>Pew Pew</title>
 
     <style>
-        body{
+        body {
             margin: 0;
         }
-        canvas{
+
+        canvas {
             width: 100%;
             height: 100%;
         }
     </style>
 </head>
+
 <body>
-    <!-- <script type='module' src="main.js"></script>  -->
+    <script type='module' src="main.js"></script> 
 
 
     <div id='loading'>
         <img id='background' src="images/background.jpg" alt="">
         <div id='main-group'>
-             <img id='logo' src="images/logo.png" alt="">
-             <div id='loading-container'>
-                 <div id='loading-bar'>
-                     <h2>Loading...</h2>
-                     <div id='loading-percent'>0%</div>
-                 </div>
-                 <div id='instructions'>
-                     <h2>Instructions</h2>
+            <div id='logo-div'><img id='logo' src="images/logo.png" alt=""></div>
+            
+            <div id='loading-container'>
+                <div id='loading-bar'>
+                    <h2>Loading...</h2>
+                    <div id='loading-percent'>0%</div>
+                </div>
+                <div id='instructions'>
+                    <h2>Instructions</h2>
 
-                     <div class='moves'>
-                         Move forward
-                         <div class='keys'>
-                             W
-                         </div>
-                     </div>
+                    <div class='moves'>
+                        Move forward
+                        <div class='keys'>
+                            W
+                        </div>
+                    </div>
+                   
+                    <div class='moves'>
+                        Move left
+                        <div class='keys'>
+                            A
+                        </div>
+                    </div>
+
                      <div class='moves'>
                          Move back
                          <div class='keys'>
                              S
                          </div>
                      </div>
-                     <div class='moves'>
-                         Move left
-                         <div class='keys'>
-                             A
-                         </div>
-                     </div>
-                     <div class='moves'>
-                         Move right
-                         <div class='keys'>
-                             D
-                         </div>
-                     </div>
-                     <div class='moves'>
-                         Reload
-                         <div class='keys'>
-                             R
-                         </div>
-                     </div>
-                     <div class='moves'>
-                         Restart timer
-                         <div class='keys'>
-                             T
-                         </div>
-                     </div>
-                     <div class='moves'>
-                         Start the game
-                         <div class='keys'>
-                             ENTER
-                         </div>
-                     </div>
+
+                    <div class='moves'>
+                        Move right
+                        <div class='keys'>
+                            D
+                        </div>
+                    </div>
+                    <div class='moves'>
+                        Reload
+                        <div class='keys'>
+                            R
+                        </div>
+                    </div>
+                    <div class='moves'>
+                        Restart timer
+                        <div class='keys'>
+                            T
+                        </div>
+                    </div>
+                    <div class='moves'>
+                        Start the game
+                        <div class='keys'>
+                            ENTER
+                        </div>
+                    </div>
+                    <div class='moves'>
+                        Pause
+                        <div class='keys'>
+                            ESC
+                        </div>
+                    </div>
+                    <div class='moves'>
+                        Main menu
+                        <div class='keys'>
+                            Q
+                        </div>
+                    </div>
 
 
 
-                 </div>
+                </div>
 
-             </div>
+            </div>
+
+            <div><a id='about-rules' href="/about.html">About/Rules</a></div>
         </div>
     </div>
 
@@ -97,19 +118,18 @@
 
 
     <div id='play-area'>
-        <div class="ammo-box active-ammo">Ammo: <div id="ammo"></div> <img src="images/ammo_pistol.png"
-                alt=""></div>
+        <div class="ammo-box active-ammo">Ammo: <div id="ammo"></div> <img src="images/ammo_pistol.png" alt=""></div>
         <div class="ammo-box">Reload R</div>
         <div class="ammo-box reload-box">Reloading <div id="reloading-animation">
                 <div id="reloading-bar"></div>
-                
+
             </div>
         </div>
 
         <div id="timer-box">
             <div class="time-container">
                 <span>Time: </span>
-                
+
                 <div id='time'>00:00.00</div>
             </div>
 
@@ -120,6 +140,7 @@
             <p>Best time: <span id='record'>00:00.00</span></p>
         </div>
     </div>
-    
+
 </body>
+
 </html>

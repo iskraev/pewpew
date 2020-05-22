@@ -224,7 +224,7 @@ function init() {
 
     loadingManager.onLoad = function () {
         RESOURCES_LOADED = true;
-        document.getElementById('loading-bar').innerHTML = '<h2>Press ENTER to start</h2>';
+        document.getElementById('loading-bar').innerHTML = '<h2>Press <span style="color: rgb(0, 255, 0);">ENTER</span> to start</h2>';
         onResourcesLoaded();
         animate();
         // controls.lock()
@@ -636,9 +636,18 @@ function init() {
                                 document.getElementById('targets-left').innerHTML = targetsLeft;
                                 timerInterval = setInterval(() => {
                                     if(!pause){
-                                        timer += (10 / 1000)
-                                        timer.toPrecision(2);
-                                        document.getElementById('time').innerHTML = printTime(timer);
+                                        if(timer > 3600){
+                                            timer = 0;
+                                            document.getElementById('targets-left').innerHTML = 0;
+                                            document.getElementById('time').innerHTML = '00:00.00';
+                                            clearTargets()
+                                            clearInterval(timerInterval);
+                                            finish.play();
+                                        }else{
+                                            timer += (10 / 1000)
+                                            timer.toPrecision(2);
+                                            document.getElementById('time').innerHTML = printTime(timer);
+                                        }
                                     }
                                 }, 10)
                                 timerWaiting = false;
@@ -704,7 +713,7 @@ function clearTargets(){
     }
     collidableMeshListTargets = [];
     clearInterval(timerInterval)
-    timer = 0;
+    // timer = 0;
 }
 function printTime(time){
     minutes = Math.floor(time/ 60)
@@ -876,14 +885,14 @@ function onResourcesLoaded() {
     scene.add(objects['satelliteDishLarge'])
 
 
-    let allObjects = Object.keys(objects)
-    for (let i = 1; i < allObjects.length; i++) {
-        for (let j = 0; j < objects[allObjects[i]].children.length; j++) {
+    // let allObjects = Object.keys(objects)
+    // for (let i = 1; i < allObjects.length; i++) {
+    //     for (let j = 0; j < objects[allObjects[i]].children.length; j++) {
             
-            collidableMeshListObjects.push(objects[allObjects[i]].children[j])
+    //         collidableMeshListObjects.push(objects[allObjects[i]].children[j])
             
-        }
-    }
+    //     }
+    // }
 
     // console.log(objects)
 
@@ -1004,18 +1013,7 @@ function animate() {
 
         controls.getObject().position.y += (velocity.y * delta); // new behavior
 
-        // if (controls.getObject().position.y < 15) {
-
-        //     velocity.y = 0;
-        // controls.getObject().position.y = 10;
-
-        //     canJump = true;
-
-        // }
-
-
-
-
+    
 
         for (let i = 0; i < bullets.length; i += 1) {
             if (bullets[i] === undefined) continue;
