@@ -3,7 +3,7 @@ body{
     cursive;
     cursor: url('./images/favicon-32x32.png'),
     default;
-    
+    overflow: hidden;
 }
 .ammo-box{
     display: none;
@@ -48,11 +48,11 @@ body{
     /* width: 100%; */
     background-color: rgb(0, 255, 0);
 }
-
+/* 
 canvas{
     width: 99% !important;
     height: 99% !important;
-}
+} */
 
 #play-area{
     display: none;
@@ -242,7 +242,22 @@ p{
 a{
     text-decoration: none;
     color: inherit;
+     -webkit-touch-callout: none;
+     /* iOS Safari */
+     -webkit-user-select: none;
+     /* Safari */
+     -khtml-user-select: none;
+     /* Konqueror HTML */
+     -moz-user-select: none;
+     /* Old versions of Firefox */
+     -ms-user-select: none;
+     /* Internet Explorer/Edge */
+     user-select: none;
+     /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
+
+
 
 
 #about-container{
@@ -293,4 +308,18 @@ a:active{
 
 #github:hover{
     color: khaki;
+}
+
+
+#pause{
+    display: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    backdrop-filter: blur(8px) brightness(40%);
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2vw;
 }

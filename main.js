@@ -524,50 +524,50 @@ function init() {
         }
 
     })
-
+    //fires whenever the controller is locked
     controls.addEventListener('lock', function () {
-        
-
-
-        pause= false;
-
-        // instructions.style.display = 'none';
-        // blocker.style.display = 'none';
-
-    });
-
-    controls.addEventListener('unlock', function () {
-        
+        document.getElementById('pause').style.display = 'none';
         pause = true;
-        
-        // controls.moveRight(0);
-        // controls.moveForward(0);
-        
 
     });
+    //fires whenever the controller is uncloked
+    controls.addEventListener('unlock', function () {
+        if(pause){
+            document.getElementById('pause').style.display = 'flex';
+        }
+    });
 
+    //add controls to the scene
     scene.add(controls.getObject());
 
+
+
+    //the function that reads all key inputs
     var onKeyDown = function (event) {
 
         if(event.keyCode === 13){
            
             if(RESOURCES_LOADED){
+                document.getElementById('play-area').style.display = 'block';
                 controls.lock()
-                if (!playing) {
-                    document.getElementById('play-area').style.display = "block";
-                    document.getElementById('loading').style.display = "none";
-                }
-                playing = true
+                document.getElementById('play-area').style.display = "block";
+                document.getElementById('loading').style.display = "none";
+                
             }
 
         }
 
-
+      
 
         if(controls.isLocked){
             switch (event.keyCode) {
-
+                
+                case 81:
+                    document.getElementById('play-area').style.display = 'none';
+                    controls.unlock()
+                    document.getElementById('loading').style.display = "block";
+                    pause = false;
+                    break;
                 case 38: // up
                 case 87: // w
                     moveForward = true;
@@ -921,6 +921,7 @@ console.log(objects['gun'])
 function animate() {
     // if(RESOURCES_LOADED){
     requestAnimationFrame(animate);
+    var time = performance.now();
    
     if (controls.isLocked === true) {
 
@@ -964,7 +965,7 @@ function animate() {
 
 
 
-        var time = performance.now();
+       
         var delta = (time - prevTime) / 1000;
 
         velocity.x -= velocity.x * 10.0 * delta;
@@ -1011,7 +1012,7 @@ function animate() {
         controls.moveRight(-velocity.x * delta);
         controls.moveForward(-velocity.z * delta);
 
-        controls.getObject().position.y += (velocity.y * delta); // new behavior
+        controls.getObject().position.y += (velocity.y * delta);
 
     
 
@@ -1025,14 +1026,18 @@ function animate() {
             bullets[i].position.add(bullets[i].velocity);
         }
 
-
         prevTime = time;
 
     }else{
-        //  controls.moveRight(0);
-        //  controls.moveForward(0);
-         moveRight, moveLeft, moveBackward, moveForward = false;
-         velocity.x, velocity.y, velocity.z = 0;
+        //when the game is pause prevent the player from moving if the key was pressed
+        moveForward = false;
+        moveRight = false;
+        moveBackward = false
+        moveLeft = false;
+        velocity.x = 0;
+        velocity.y = 0;
+        velocity.z = 0;
+        prevTime = time;
     }
 
 
