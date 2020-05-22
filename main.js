@@ -28,6 +28,7 @@ let horn = new Audio('sounds/horn.mp3')
 let finish = new Audio('sounds/finish.wav')
 let ready = new Audio('sounds/ready.wav')
 let go = new Audio('sounds/go.wav')
+let pewpew = new Audio('sounds/pewpew.mp3')
 
 let timerWaiting = false;
 
@@ -632,6 +633,8 @@ function init() {
                                 setTargets();
                                 horn.play()
                                 go.play();
+                                
+                                pewpew.play();
                                 targetsLeft = 5;
                                 document.getElementById('targets-left').innerHTML = targetsLeft;
                                 timerInterval = setInterval(() => {
