@@ -18,6 +18,8 @@ from './examples/jsm/objects/Sky.js';
 
 let scene, camera, renderer, controls, floorTop, floorBottom
 
+let initialStart = true;
+
 let smoke
 let reload = true;
 let pause = false;
@@ -36,9 +38,18 @@ let finish = new Audio('sounds/finish.wav')
 let ready = new Audio('sounds/ready.wav')
 let go = new Audio('sounds/go.wav')
 let pewpew = new Audio('sounds/pewpew.mp3')
+let peace = new Audio('sounds/peace.mp3')
 
-let audios = [shotAudio, reloadAudio, empty, targetHit, horn, finish, ready, go, pewpew]
+let warning1 = new Audio('sounds/warning1.mp3')
+let warning2 = new Audio('sounds/warning2.mp3')
+let warning3 = new Audio('sounds/warning3.mp3')
+
+let warnings = [warning1, warning2, warning3]
+
+
+let audios = [shotAudio, reloadAudio, empty, targetHit, horn, finish, ready, go, pewpew, peace, warning1, warning2, warning3]
 pewpew.loop = true;
+peace.loop = true;
 
 let timerWaiting = false;
 
@@ -47,21 +58,21 @@ let printedTime = ''
 let readyInterval;
 let record = 0;
 
-var raycaster;
+let raycaster;
 let timer = 0;
 let timerInterval;
 let collidableMeshListObjects = []
 let collidableMeshListTargets = []
 
-var moveForward = false;
-var moveBackward = false;
-var moveLeft = false;
-var moveRight = false;
-var canJump = false;
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+let canJump = false;
 
-var prevTime = performance.now();
-var velocity = new THREE.Vector3();
-var direction = new THREE.Vector3();
+let prevTime = performance.now();
+let velocity = new THREE.Vector3();
+let direction = new THREE.Vector3();
 let ammo = 7;
 
 let loadingManager = null;
@@ -184,6 +195,8 @@ const models = {
     }
 }
 
+
+
 const bullets = [];
 
 const objects = {};
@@ -193,23 +206,23 @@ let targetsLeft = 5
 //main initiazlie function
 function init() {
     unmute();
-    let shadowsSetting = document.getElementById('shadows')
-    shadowsSetting.addEventListener('change',()=>{
-       if(shadowsSetting.checked){
-           removeShadows();
-       }else{
-            addShadows();
-       }
-    })
 
+    let shadowsSetting = document.getElementById('shadows')
+    shadowsSetting.addEventListener('change', () => {
+        if (shadowsSetting.checked) {
+            removeShadows();
+        } else {
+            addShadows();
+        }
+    })
 
     let volumeSettings = document.getElementById('volume')
     volumeSettings.addEventListener('change', () => {
-       if (volumeSettings.checked) {
-           mute();
-       }else{
+        if (volumeSettings.checked) {
+            mute();
+        } else {
             unmute();
-       }
+        }
     })
 
     //set ammo count to the html element
@@ -270,16 +283,16 @@ function init() {
     sunSphere.visible = false;
     scene.add(sunSphere);
 
-    var distance = 400000;
+    let distance = 400000;
 
-    var uniforms = sky.material.uniforms;
+    let uniforms = sky.material.uniforms;
     uniforms["turbidity"].value = 10;
     uniforms["rayleigh"].value = 2;
     uniforms["mieCoefficient"].value = 0.005;
     uniforms["mieDirectionalG"].value = 0.8;
     uniforms["luminance"].value = 1;
-    var theta = Math.PI * (0.1 - 0.5);
-    var phi = 2 * Math.PI * (0.25 - 0.5);
+    let theta = Math.PI * (0.1 - 0.5);
+    let phi = 2 * Math.PI * (0.25 - 0.5);
 
     sunSphere.position.x = distance * Math.cos(phi);
     sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
@@ -288,9 +301,9 @@ function init() {
     sunSphere.visible = false;
 
 
+    
 
-
-    var reticle = new THREE.Mesh(
+    let reticle = new THREE.Mesh(
         new THREE.RingBufferGeometry(0.09, 0.14, 32),
         new THREE.MeshBasicMaterial({
             color: 0xffffff,
@@ -349,7 +362,6 @@ function init() {
         smokeMesh
     )
 
-
     smoke.scale.x = 2
     smoke.scale.y = 2
 
@@ -365,7 +377,7 @@ function init() {
     light.shadow.mapSize.width = 1024;
     light.shadow.mapSize.height = 1024;
 
-    var d = 300;
+    let d = 300;
 
     light.shadow.camera.left = -d;
     light.shadow.camera.right = d;
@@ -392,10 +404,10 @@ function init() {
     floor.castShadow = true;
 
 
-    var groundMaterial1 = new THREE.MeshLambertMaterial({
+    let groundMaterial1 = new THREE.MeshLambertMaterial({
         map: textureFloor,
     });
-    var groundMaterial2 = new THREE.MeshLambertMaterial({
+    let groundMaterial2 = new THREE.MeshLambertMaterial({
         map: textureFloor,
         side: THREE.BackSide
     });
@@ -439,7 +451,7 @@ function init() {
                         color: '#000000'
                     })
                 )
-                var time = performance.now();
+                let time = performance.now();
 
                 bullet.position.set(
                     camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.6,
@@ -506,6 +518,7 @@ function init() {
     })
     //fires whenever the controller is locked
     controls.addEventListener('lock', function () {
+
         playing = true;
         document.getElementById('pause').style.display = 'none';
         pause = true;
@@ -524,9 +537,13 @@ function init() {
     scene.add(controls.getObject());
 
     //the function that reads all key inputs
-    var onKeyDown = function (event) {
+    let onKeyDown = function (event) {
 
         if (event.keyCode === 13) {
+             if (initialStart) {
+                 initialStart = false;
+                 peace.play();
+             }
 
             if (RESOURCES_LOADED) {
                 document.getElementById('play-area').style.display = 'block';
@@ -540,6 +557,7 @@ function init() {
             switch (event.keyCode) {
 
                 case 81:
+                   
                     document.getElementById('play-area').style.display = 'none';
                     controls.unlock()
                     document.getElementById('loading').style.display = "block";
@@ -593,13 +611,12 @@ function init() {
                             document.getElementsByClassName('ammo-box')[0].classList.add('active-ammo')
                             document.getElementsByClassName('ammo-box')[1].classList.remove('active-ammo')
                         }
-
                     }
-
 
                     break;
                 case 84:
                     if (!timerWaiting) {
+                        peace.pause();
                         clearTargets()
                         ready.play();
                         timer = 0;
@@ -621,8 +638,6 @@ function init() {
                                         document.getElementById('time').innerHTML = '00:00.00';
                                         clearTargets()
                                         clearInterval(timerInterval);
-
-
 
                                         pewpew.pause();
                                         pewpew.currentTime = 0;
@@ -650,7 +665,7 @@ function init() {
 
     };
 
-    var onKeyUp = function (event) {
+    let onKeyUp = function (event) {
 
         switch (event.keyCode) {
 
@@ -861,10 +876,8 @@ function onResourcesLoaded() {
     objects['satelliteDishLarge'].rotation.set(Math.PI, 3, Math.PI * 3);
     objects['satelliteDishLarge'].scale.set(5, 5, 5)
     scene.add(objects['satelliteDishLarge'])
-
+    //add all shadows by default
     addShadows();
-    console.log(objects['gun'])
-
 }
 
 
@@ -872,21 +885,23 @@ function onResourcesLoaded() {
 
 
 function animate() {
-    var time = performance.now();
+    let time = performance.now();
 
     if (controls.isLocked === true) {
 
         if (camera.position.y < -150) {
+            warnings[0].play();
+            warnings.push(warnings.shift())
             camera.position.set(21, 25, 31)
         }
         raycaster.ray.origin.copy(controls.getObject().position);
         raycaster.ray.origin.y -= 10;
 
-        var intersections = raycaster.intersectObjects([floorTop]);
+        let intersections = raycaster.intersectObjects([floorTop]);
 
-        var onObject = intersections.length > 0;
+        let onObject = intersections.length > 0;
 
-        var delta = (time - prevTime) / 1000;
+        let delta = (time - prevTime) / 1000;
 
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
@@ -951,18 +966,18 @@ function animate() {
     }
 
     if (playing) {
-        render();
         requestAnimationFrame(animate);
     }
+    
+    render();
 
-    
-    
+
 }
 
 function collision(bullet) {
-    for (var vertexIndex = 0; vertexIndex < bullet.geometry.vertices.length; vertexIndex++) {
-        var ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
-        var collisionResults = ray.intersectObjects(collidableMeshListTargets);
+    for (let vertexIndex = 0; vertexIndex < bullet.geometry.vertices.length; vertexIndex++) {
+        let ray = new THREE.Raycaster(bullet.position, bullet.geometry.vertices[vertexIndex]);
+        let collisionResults = ray.intersectObjects(collidableMeshListTargets);
         if (collisionResults.length > 0) {
             targetsLeft -= 1;
             document.getElementById('targets-left').innerHTML = targetsLeft;
@@ -971,6 +986,10 @@ function collision(bullet) {
                 clearInterval(timerInterval)
                 pewpew.pause();
                 pewpew.currentTime = 0;
+
+                setTimeout(() => {
+                    peace.play();
+                }, 3000)
                 finish.play();
                 if (record === 0) {
                     record = timer
@@ -995,7 +1014,7 @@ function collision(bullet) {
             break;
         }
 
-        var collisionResultsNotTargets = ray.intersectObjects(collidableMeshListObjects);
+        let collisionResultsNotTargets = ray.intersectObjects(collidableMeshListObjects);
         if (collisionResultsNotTargets.length > 0) {
             bullet.alive = false;
         }
@@ -1079,7 +1098,7 @@ function setTargets() {
 
 
 
-function removeShadows(){
+function removeShadows() {
     scene.traverse(function (element) {
         if (!(element instanceof THREE.AmbientLight)) {
             element.castShadow = false;
@@ -1088,12 +1107,12 @@ function removeShadows(){
     })
     scene.remove(light)
     scene.remove(ambientLight)
-    
+
     scene.add(improvedLight)
 }
 
 
-function addShadows(){
+function addShadows() {
     scene.add(light)
     scene.add(ambientLight)
     scene.remove(improvedLight)
@@ -1105,13 +1124,14 @@ function addShadows(){
     })
 }
 
-function mute(){
+function mute() {
     for (let i = 0; i < audios.length; i++) {
         audios[i].volume = 0
     }
-    
+
 }
-function unmute(){
+
+function unmute() {
     for (let i = 0; i < audios.length; i++) {
         audios[i].volume = 0.4
     }
@@ -1131,4 +1151,3 @@ function onWindowResize() {
 window.addEventListener('resize', onWindowResize, false);
 
 init();
-
