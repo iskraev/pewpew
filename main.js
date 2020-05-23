@@ -986,9 +986,10 @@ function collision(bullet) {
                 clearInterval(timerInterval)
                 pewpew.pause();
                 pewpew.currentTime = 0;
-
+                timerWaiting = true;
                 setTimeout(() => {
                     peace.play();
+                    timerWaiting = false;
                 }, 3000)
                 finish.play();
                 if (record === 0) {
