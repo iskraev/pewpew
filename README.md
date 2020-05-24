@@ -24,7 +24,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     Scenes allow you to set up what and where is to be rendered by three.js. This is where you place objects, lights and cameras. All objects can be either added or removed from the scene using `scene.add(object)` or `scene.remove(object)` functions.
 
-    ```
+    ``` javascript
         scene = new THREE.Scene();
     ```
 
@@ -37,7 +37,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
     - Frustrum near plane (0.1)
     - Frustrum far plane (1000)
 
-    ```
+    ```  javascript
         //create the camera
         camera = new THREE.PerspectiveCamera(
             90,
@@ -54,7 +54,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     The WebGL renderer displays the scenes using WebGL.
 
-    ```
+    ``` javascript
         //creating THREE.js WebGL renderer
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -65,7 +65,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     There are two sources of light. One is ambient light and second is directional light.
 
-    ```
+    ``` javascript
         //add ambient light and light to the game
         ambientLight = new THREE.AmbientLight(0x777777)
         scene.add(ambientLight);
@@ -89,7 +89,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     The implementation of this class is based on the Pointer Lock API. PointerLockControls is a perfect choice for first person 3D games.
         
-    ```
+    ``` javascript
         //create FPS controls
         controls = new PointerLockControls(camera, renderer.domElement);
     ```
@@ -99,7 +99,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     This function is required in order to have infinite loop for the game to run. JavaScript's `requestAnimationFrame(animate)` calls the function recursively.
 
-    ```
+    ``` javascript
     function animate(){
         ...
         requestAnimationFrame(animate);
@@ -114,7 +114,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
     - Importing 3D models: 
 
 
-        ```
+        ``` javascript
         const models = {
             gun: {
                 obj: 'objects/pistolSilencer.obj',
@@ -130,7 +130,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
     - Loading 3D objects and creating mesh objects:
 
 
-        ```
+        ``` javascript
         for (let _key in models) {
             (function (key) {
                 let mtlLoader = new MTLLoader(loadingManager);
@@ -150,7 +150,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
 - ### Creating simple shape THREE.js mesh objects
 
-    ```
+    ``` javascript
         //create floor texture(image was used)
         const textureFloor = new THREE.TextureLoader().load('images/stone.jpg')
         ...
@@ -196,7 +196,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     Shadows and lights play huge role in the game perfomance. In order to make the improvement, all shadows are removed and all lights are replaced with simple source of light.
     
-    ```
+    ``` javascript
     function removeShadows() {
         //iterate thru all the scene objects and remove shadows
         scene.traverse(function (element) {
@@ -212,6 +212,7 @@ The game was developed using THREE.js library. Main `init()` function sets up al
         scene.add(improvedLight)
     }
     ```
+
     - ### Improvement OFF
 
         ![OFF](https://i.imgur.com/Nfoj06Z.png?1)
@@ -228,3 +229,10 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
 There are plenty of sound effets in the game. Some of them are made by me using Ableton Live. Two main soundtracks ('Peace', 'PewPew') are produced and recorded by me in Ableton Live as well.
 
+# Hosting
+
+The game is hosted on [Heroku.com](https://heroku.com) and custom domain was added using [AWS Route 53](https://aws.amazon.com/route53/). In order to make `index.html` as an entry file, a `php` file `index.php` was added to the main folder of the project. `php` file contains this code which redirects to `index.html`
+
+``` php
+    <?php header( 'Location: https://pewpew.iskrayev.com/index.html', true, 301 ) ;  ?>
+```
