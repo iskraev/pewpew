@@ -270,6 +270,13 @@ function init() {
 
     //on load the loading bar changes to the "Press enter to start"
     loadingManager.onLoad = function () {
+        //active checkboxes after loading
+        let shadowsSetting = document.getElementById('shadows')
+        let volumeSettings = document.getElementById('volume')
+        shadowsSetting.disabled = false;
+        volumeSettings.disabled = false;
+
+        //change loading bar and start animation
         RESOURCES_LOADED = true;
         document.getElementById('loading-bar').innerHTML = '<h2>Press <span style="color: rgb(0, 255, 0);">ENTER</span> to start</h2>';
         onResourcesLoaded();
@@ -348,31 +355,14 @@ function init() {
     //function to load all the models
     for (let _key in models) {
         (function (key) {
-
             let mtlLoader = new MTLLoader(loadingManager);
             mtlLoader.load(models[key].mtl, function (materials) {
                 materials.preload();
-
                 let objLoader = new OBJLoader(loadingManager);
-
                 objLoader.setMaterials(materials);
+                
                 objLoader.load(models[key].obj, function (mesh) {
-
-                    mesh.traverse(function (node) {
-                        if (node instanceof THREE.Mesh) {
-                            if ('castShadow' in models[key])
-                                node.castShadow = models[key].castShadow;
-                            else
-                                node.castShadow = true;
-
-                            if ('receiveShadow' in models[key])
-                                node.receiveShadow = models[key].receiveShadow;
-                            else
-                                node.receiveShadow = true;
-                        }
-                    });
                     models[key].mesh = mesh;
-
                 });
             });
 
@@ -400,15 +390,7 @@ function init() {
     textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
     textureFloor.repeat.set(25, 25);
     textureFloor.anisotropy = 16;
-    let floor = new THREE.Mesh(
-        new THREE.BoxGeometry(10, 10, 10, 10),
-        new THREE.MeshLambertMaterial({
-            map: textureFloor,
-        })
-    )
-    floor.receiveShadow = true;
-    floor.castShadow = true;
-
+   
     //create two plates facing opposite to each other 
     let groundMaterial1 = new THREE.MeshLambertMaterial({
         map: textureFloor,
