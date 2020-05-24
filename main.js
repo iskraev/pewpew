@@ -201,12 +201,18 @@ const bullets = [];
 
 const objects = {};
 
-
+//set up initial target count
 let targetsLeft = 5
+
+
 //main initiazlie function
 function init() {
+
+    //unmute all the sounds and set up the volume to the 0.4
     unmute();
 
+
+    //set up the event listener for improved perfomance (checkboxes)
     let shadowsSetting = document.getElementById('shadows')
     shadowsSetting.addEventListener('change', () => {
         if (shadowsSetting.checked) {
@@ -216,6 +222,7 @@ function init() {
         }
     })
 
+    //set up the event listener for sounds mute (checkboxes)
     let volumeSettings = document.getElementById('volume')
     volumeSettings.addEventListener('change', () => {
         if (volumeSettings.checked) {
@@ -228,30 +235,40 @@ function init() {
     //set ammo count to the html element
     document.getElementById('ammo').innerHTML = ammo;
 
+    //create the scene
     scene = new THREE.Scene();
+
+    //create the camera
     camera = new THREE.PerspectiveCamera(
         90,
         window.innerWidth / window.innerHeight,
         0.1,
         1000
     );
-    //camera position
-    camera.position.set(21, 25, 31)
-    camera.rotation.set(0, 10, 0)
-    // camera.lookAt(new THREE.Vector3(0, 10, 0));
+    //set up camera initial position position
+    camera.position.set(21, 25, 31);
+    //set up the rotation of camera
+    camera.rotation.set(0, 10, 0);
+    
+    //creating THREE.js WebGL renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    //adding canvas to the main page
     document.getElementById('play-area').appendChild(renderer.domElement);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+    //THREE js loading manager which loads all the models
     loadingManager = new THREE.LoadingManager();
 
-    loadingManager.onProgress = function (e, b) {
-        document.getElementById('loading-percent').innerHTML = Math.floor((b / 38) * 100) + '%';
+    //the loading bar and percentage changes accordingly to the loaded files
+    loadingManager.onProgress = function (e, objectsLoaded) {
+        document.getElementById('loading-percent').innerHTML = Math.floor((objectsLoaded / 38) * 100) + '%';
     }
 
+    //on load the loading bar changes to the "Press enter to start"
     loadingManager.onLoad = function () {
         RESOURCES_LOADED = true;
         document.getElementById('loading-bar').innerHTML = '<h2>Press <span style="color: rgb(0, 255, 0);">ENTER</span> to start</h2>';
@@ -259,13 +276,28 @@ function init() {
         animate();
     }
 
+    //Light created for the perfomance mode
+    improvedLight = new THREE.AmbientLight(0xffffff);
 
-    improvedLight = new THREE.AmbientLight(0xffffff)
+    //add ambient light and light to the game
+    ambientLight = new THREE.AmbientLight(0x777777)
+    scene.add(ambientLight);
 
+    light = new THREE.DirectionalLight(0xdfebff, 1);
+    light.position.set(-50, 200, -100);
+    light.position.multiplyScalar(1.3);
+    light.castShadow = true;
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
+    let d = 300;
+    light.shadow.camera.left = -d;
+    light.shadow.camera.right = d;
+    light.shadow.camera.top = d;
+    light.shadow.camera.bottom = -d;
+    light.shadow.camera.far = 1000;
+    scene.add(light);
 
-
-    //set up sky
-
+    //setting up the sky
     let sky = new Sky();
     sky.scale.setScalar(450000);
     sky.castShadow = true;
@@ -283,8 +315,8 @@ function init() {
     sunSphere.visible = false;
     scene.add(sunSphere);
 
+    //set up the position and the sun settings
     let distance = 400000;
-
     let uniforms = sky.material.uniforms;
     uniforms["turbidity"].value = 10;
     uniforms["rayleigh"].value = 2;
@@ -293,16 +325,13 @@ function init() {
     uniforms["luminance"].value = 1;
     let theta = Math.PI * (0.1 - 0.5);
     let phi = 2 * Math.PI * (0.25 - 0.5);
-
     sunSphere.position.x = distance * Math.cos(phi);
     sunSphere.position.y = distance * Math.sin(phi) * Math.sin(theta);
     sunSphere.position.z = distance * Math.sin(phi) * Math.cos(theta);
     uniforms["sunPosition"].value.copy(sunSphere.position);
     sunSphere.visible = false;
 
-
-    
-
+    //creating crosshair in the middle of the screen
     let reticle = new THREE.Mesh(
         new THREE.RingBufferGeometry(0.09, 0.14, 32),
         new THREE.MeshBasicMaterial({
@@ -316,6 +345,7 @@ function init() {
     camera.add(reticle);
 
 
+    //function to load all the models
     for (let _key in models) {
         (function (key) {
 
@@ -349,6 +379,7 @@ function init() {
         })(_key);
     }
 
+    //create smoke(fire) effect when shooting
     const smokeParticle = new THREE.TextureLoader().load('images/fire_01.png')
     const smokeMesh = new THREE.MeshBasicMaterial({
         map: smokeParticle,
@@ -356,39 +387,14 @@ function init() {
         transparent: true,
         opacity: 1
     })
-
     smoke = new THREE.Mesh(
         new THREE.PlaneGeometry(10, 10, 10, 10),
         smokeMesh
     )
-
     smoke.scale.x = 2
     smoke.scale.y = 2
 
-    ambientLight = new THREE.AmbientLight(0x777777)
-    scene.add(ambientLight);
-
-    light = new THREE.DirectionalLight(0xdfebff, 1);
-    light.position.set(-50, 200, -100);
-    light.position.multiplyScalar(1.3);
-
-    light.castShadow = true;
-
-    light.shadow.mapSize.width = 1024;
-    light.shadow.mapSize.height = 1024;
-
-    let d = 300;
-
-    light.shadow.camera.left = -d;
-    light.shadow.camera.right = d;
-    light.shadow.camera.top = d;
-    light.shadow.camera.bottom = -d;
-
-    light.shadow.camera.far = 1000;
-
-    scene.add(light);
-
-
+    //create floor texture(image was used)
     const textureFloor = new THREE.TextureLoader().load('images/stone.jpg')
     textureFloor.anisotropy = 16;
     textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
@@ -403,7 +409,7 @@ function init() {
     floor.receiveShadow = true;
     floor.castShadow = true;
 
-
+    //create two plates facing opposite to each other 
     let groundMaterial1 = new THREE.MeshLambertMaterial({
         map: textureFloor,
     });
@@ -413,14 +419,13 @@ function init() {
     });
 
 
+    //seconds plate
     floorTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial1);
     floorTop.position.y = 5;
     floorTop.position.x = 150;
     floorTop.position.z = 145;
     floorTop.rotation.x = -Math.PI / 2;
     floorTop.receiveShadow = true;
-
-
     floorBottom = new THREE.Mesh(new THREE.PlaneBufferGeometry(300, 300), groundMaterial2);
     floorBottom.position.y = 4;
     floorBottom.position.x = 150;
@@ -428,13 +433,18 @@ function init() {
     floorBottom.rotation.x = -Math.PI / 2;
     floorBottom.receiveShadow = true;
 
-
     scene.add(floorTop)
     scene.add(floorBottom)
 
+
+    //create FPS controls
     controls = new PointerLockControls(camera, renderer.domElement);
 
+    //set the allow to shot to true
     let allowShot = true;
+
+
+    //add event listener to trigger shots
     document.addEventListener('click', () => {
 
         if (controls.isLocked) {
@@ -1100,15 +1110,17 @@ function setTargets() {
 
 
 function removeShadows() {
+    //iterate thru all the scene objects and remove shadows
     scene.traverse(function (element) {
         if (!(element instanceof THREE.AmbientLight)) {
             element.castShadow = false;
             element.receiveShadow = false;
         }
     })
+    //remove all the lights
     scene.remove(light)
     scene.remove(ambientLight)
-
+    //add improved light
     scene.add(improvedLight)
 }
 
