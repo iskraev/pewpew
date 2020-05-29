@@ -27,7 +27,8 @@ let pause = false;
 let playing = false;
 
 let ambientLight, improvedLight
-let light
+let light;
+let textInterval;
 
 let shotAudio = new Audio('sounds/shot.wav')
 let reloadAudio = new Audio('sounds/reload.wav')
@@ -514,11 +515,32 @@ function init() {
         playing = true;
         document.getElementById('pause').style.display = 'none';
         pause = true;
+
+        let text = document.getElementsByClassName('press-t')[0];
+        let counter = 2;
+        let flip = false;
+        textInterval = setInterval(()=>{
+            text.style.fontSize = `${counter}vw`;
+            
+            
+            if(flip){
+                counter -= 0.005;
+            }else{
+                counter += 0.005;
+            }
+
+            if(counter > 2.5){
+                flip = true
+            }else if(counter < 1.5){
+                flip = false
+            }
+        },10)
         animate();
 
     });
     //fires whenever the controller is uncloked
     controls.addEventListener('unlock', function () {
+        clearInterval(textInterval)
         playing = false;
         if (pause) {
             document.getElementById('pause').style.display = 'flex';

@@ -16,11 +16,11 @@
     <meta property="og:image" content="http://pewpew.iskrayev.com/images/preview2.png">
     <meta property="og:image:width" content="300" />
     <meta property="og:image:height" content="300" />
-    <meta property="og:title" content="Pew Pew" />
+    <meta property="og:title" content="PewPew" />
     <meta property="og:description" content="PewPew is a first-person shooter 3D game where the main goal is to take down all 5 targets as fast as possible. Every time the targets are placed randomly." />
 
 
-    <title>Pew Pew</title>
+    <title>PewPew</title>
 
     <style>
         body {
@@ -50,6 +50,13 @@
                 </div>
                 <div id='instructions'>
                     <h2>Instructions</h2>
+
+                    <div class='moves'>
+                        Shoot
+                        <div class='keys'>
+                            Mouse left click
+                        </div>
+                    </div>
 
                     <div class='moves'>
                         Move forward
@@ -84,25 +91,25 @@
                             R
                         </div>
                     </div>
-                    <div class='moves'>
+                    <div class='moves red-text'>
                         Restart timer
                         <div class='keys'>
                             T
                         </div>
                     </div>
-                    <div class='moves'>
+                    <div class='moves red-text'>
                         Start the game
                         <div class='keys'>
                             ENTER
                         </div>
                     </div>
-                    <div class='moves'>
+                    <div class='moves red-text'>
                         Pause
                         <div class='keys'>
                             ESC
                         </div>
                     </div>
-                    <div class='moves'>
+                    <div class='moves red-text'>
                         Main menu
                         <div class='keys'>
                             Q
@@ -116,7 +123,7 @@
             </div>
 
             <div class='about-settings'>
-                <a id='about-rules' href="/about.html">About/Rules</a>
+                <a id='about-rules' href="/about.html">Rules/About</a>
                 <div id='settings'>
                     <h3>Settings</h3>
                     <label>Improve perfomance
@@ -156,6 +163,8 @@
 
             <p>Targets: <span id='targets-left'>0</span> left</p>
         </div>
+
+        <p class="press-t">Press T to restart timer</p>
 
         <div id="record-box">
             <p>Best time: <span id='record'>00:00.00</span></p>
