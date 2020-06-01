@@ -519,6 +519,7 @@ function init() {
         let text = document.getElementsByClassName('press-t')[0];
         let counter = 2;
         let flip = false;
+        clearInterval(textInterval);
         textInterval = setInterval(()=>{
             text.style.fontSize = `${counter}vw`;
             
