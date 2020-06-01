@@ -555,14 +555,16 @@ function init() {
     let onKeyDown = function (event) {
 
         if (event.keyCode === 13) {
-             if (initialStart) {
-                 initialStart = false;
-                 peace.play();
-             }
+            if (initialStart) {
+                initialStart = false;
+                peace.play();
+            }
 
             if (RESOURCES_LOADED) {
                 document.getElementById('play-area').style.display = 'block';
-                controls.lock()
+                if(!controls.isLocked){
+                    controls.lock();
+                }
                 document.getElementById('play-area').style.display = "block";
                 document.getElementById('loading').style.display = "none";
             }
