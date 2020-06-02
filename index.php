@@ -1,1 +1,1 @@
-<?php header( 'Location: https://pewpew.iskrayev.com/index.html', true, 301 ) ;  ?>
+<?php require("index.html"); ?>
