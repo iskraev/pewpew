@@ -59,6 +59,7 @@ body {
 
 .red-text {
     color: rgb(247, 22, 22);
+    text-shadow: 0 0 5px rgb(0, 0, 0);
 }
 
 #play-area {
