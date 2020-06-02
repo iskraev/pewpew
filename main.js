@@ -250,7 +250,7 @@ function init() {
     camera.position.set(21, 25, 31);
     //set up the rotation of camera
     camera.rotation.set(0, 10, 0);
-    
+
     //creating THREE.js WebGL renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -361,7 +361,7 @@ function init() {
                 materials.preload();
                 let objLoader = new OBJLoader(loadingManager);
                 objLoader.setMaterials(materials);
-                
+
                 objLoader.load(models[key].obj, function (mesh) {
                     models[key].mesh = mesh;
                 });
@@ -391,7 +391,7 @@ function init() {
     textureFloor.wrapS = textureFloor.wrapT = THREE.RepeatWrapping;
     textureFloor.repeat.set(25, 25);
     textureFloor.anisotropy = 16;
-   
+
     //create two plates facing opposite to each other 
     let groundMaterial1 = new THREE.MeshLambertMaterial({
         map: textureFloor,
@@ -520,22 +520,22 @@ function init() {
         let counter = 2;
         let flip = false;
         clearInterval(textInterval);
-        textInterval = setInterval(()=>{
+        textInterval = setInterval(() => {
             text.style.fontSize = `${counter}vw`;
-            
-            
-            if(flip){
+
+
+            if (flip) {
                 counter -= 0.005;
-            }else{
+            } else {
                 counter += 0.005;
             }
 
-            if(counter > 2.5){
+            if (counter > 2.5) {
                 flip = true
-            }else if(counter < 1.5){
+            } else if (counter < 1.5) {
                 flip = false
             }
-        },10)
+        }, 10)
         animate();
 
     });
@@ -562,7 +562,7 @@ function init() {
 
             if (RESOURCES_LOADED) {
                 document.getElementById('play-area').style.display = 'block';
-                if(!controls.isLocked){
+                if (!controls.isLocked) {
                     controls.lock();
                 }
                 document.getElementById('play-area').style.display = "block";
@@ -574,7 +574,7 @@ function init() {
             switch (event.keyCode) {
 
                 case 81:
-                   
+
                     document.getElementById('play-area').style.display = 'none';
                     controls.unlock()
                     document.getElementById('loading').style.display = "block";
@@ -790,14 +790,12 @@ function onResourcesLoaded() {
     objects['palmLong1'].scale.set(2, 2, 2)
     scene.add(objects['palmLong1'])
 
-
     //lantern
     objects['lantern'] = models.lantern.mesh.clone()
     objects['lantern'].position.set(218, 5, 150);
     objects['lantern'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['lantern'].scale.set(25, 25, 25)
     scene.add(objects['lantern'])
-
 
     //stallGreen
     objects['stallGreen'] = models.stallGreen.mesh.clone()
@@ -806,7 +804,6 @@ function onResourcesLoaded() {
     objects['stallGreen'].scale.set(25, 25, 25)
     scene.add(objects['stallGreen'])
 
-
     //tree
     objects['tree'] = models.tree.mesh.clone()
     objects['tree'].position.set(200, 5, 112);
@@ -814,13 +811,11 @@ function onResourcesLoaded() {
     objects['tree'].scale.set(25, 25, 25)
     scene.add(objects['tree'])
 
-
     objects['tree1'] = models.tree.mesh.clone()
     objects['tree1'].position.set(71, 5, 154);
     objects['tree1'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['tree1'].scale.set(30, 30, 30)
     scene.add(objects['tree1'])
-
 
     //cartHigh
     objects['cartHigh'] = models.cartHigh.mesh.clone()
@@ -828,7 +823,6 @@ function onResourcesLoaded() {
     objects['cartHigh'].rotation.set(Math.PI, 90, Math.PI * 3);
     objects['cartHigh'].scale.set(25, 25, 25)
     scene.add(objects['cartHigh'])
-
 
     //tower
     objects['tower'] = models.tower.mesh.clone()
@@ -897,10 +891,6 @@ function onResourcesLoaded() {
     addShadows();
 }
 
-
-
-
-
 function animate() {
     let time = performance.now();
 
@@ -935,7 +925,6 @@ function animate() {
             Math.sin(time / 5000 * Math.PI - 1) - 4,
             objects["gun"].position.z
         );
-
 
         //reload animation
 
@@ -985,10 +974,8 @@ function animate() {
     if (playing) {
         requestAnimationFrame(animate);
     }
-    
+
     render();
-
-
 }
 
 function collision(bullet) {
@@ -1040,7 +1027,6 @@ function collision(bullet) {
 }
 
 function setTargets() {
-
     const targetImage = new THREE.TextureLoader().load('images/target.png')
 
     let target = new THREE.Mesh(
@@ -1111,7 +1097,6 @@ function setTargets() {
         collidableMeshListTargets.push(targets[i])
 
     }
-
 }
 
 
@@ -1148,7 +1133,6 @@ function mute() {
     for (let i = 0; i < audios.length; i++) {
         audios[i].volume = 0
     }
-
 }
 
 function unmute() {
@@ -1166,7 +1150,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
 
 window.addEventListener('resize', onWindowResize, false);
 
