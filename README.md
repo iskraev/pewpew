@@ -8,6 +8,7 @@ PewPew is the FPS(First Person Shooter) game where the main goal is to take down
 - [Three.js](https://threejs.org/)
 - HTML5
 - CSS
+- Google Firebase
 
 # Main page
 
