@@ -427,7 +427,7 @@ input[type=checkbox] {
 }
 .leaderboard-name{
     display: inline-block;
-    width: 8vw;
+    width: 10vw;
     color: white;
     text-align: center;
 }
