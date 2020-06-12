@@ -10,14 +10,15 @@
 
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
     <link rel="shortcut icon" href="favicon.ico?v=2" type="image/x-icon" />
-    
+
     <meta property="og:url" content="https://pewpew.iskrayev.com/index.html" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="http://pewpew.iskrayev.com/images/preview2.png">
     <meta property="og:image:width" content="300" />
     <meta property="og:image:height" content="300" />
     <meta property="og:title" content="PewPew" />
-    <meta property="og:description" content="PewPew is a first-person shooter 3D game where the main goal is to take down all 5 targets as fast as possible. Every time the targets are placed randomly." />
+    <meta property="og:description"
+        content="PewPew is a first-person shooter 3D game where the main goal is to take down all 5 targets as fast as possible. Every time the targets are placed randomly." />
 
     <title>PewPew</title>
 
@@ -34,17 +35,80 @@
 </head>
 
 <body>
-    <script type='module' src="main.js"></script> 
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase.js"></script>
+
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script type='module' src="main.js"></script>
 
     <div id='loading'>
         <img id='background' src="images/background.jpg" alt="">
         <div id='main-group'>
-            <div id='logo-div'><img id='logo' src="images/logo.png" alt=""></div>
-            
+            <div id='logo-div'>
+                <img id='logo' src="images/logo.png" alt="">
+                <div class="leaderboard">
+                    <h2>Leaderboard</h2>
+                    <div>
+                        <div class="leaderboard-number">1:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-0-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-0'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">2:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-1-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-1'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">3:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-2-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-2'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">4:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-3-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-3'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">5:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-4-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-4'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">6:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-5-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-5'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">7:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-6-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-6'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">8:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-7-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-7'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">9:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-8-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-8'></div>
+                    </div>
+                    <div>
+                        <div class="leaderboard-number">10:</div>
+                        <div class="leaderboard-name" id='leaderboard-time-9-name'>Loading</div>
+                        <div class="leaderboard-time" id='leaderboard-time-9'></div>
+                    </div>
+                </div>
+            </div>
+
             <div id='loading-container'>
                 <div id='loading-bar'>
                     <h2>Loading...</h2>
                     <div id='loading-percent'>0%</div>
+                </div>
+                <div class="nickname">Nickname: <input maxlength="10" placeholder="Anonymous" id="nickname" type="text">
                 </div>
                 <div id='instructions'>
                     <h2>Instructions</h2>
@@ -59,28 +123,28 @@
                     <div class='moves'>
                         Move forward
                         <div class='keys'>
-                            W
-                        </div>
-                    </div>
-                   
-                    <div class='moves'>
-                        Move left
-                        <div class='keys'>
-                            A
+                            W / Up Arrow
                         </div>
                     </div>
 
-                     <div class='moves'>
-                         Move back
-                         <div class='keys'>
-                             S
-                         </div>
-                     </div>
+                    <div class='moves'>
+                        Move left
+                        <div class='keys'>
+                            A / Left Arrow
+                        </div>
+                    </div>
+
+                    <div class='moves'>
+                        Move back
+                        <div class='keys'>
+                            S / Down Arrow
+                        </div>
+                    </div>
 
                     <div class='moves'>
                         Move right
                         <div class='keys'>
-                            D
+                            D / Right Arrow
                         </div>
                     </div>
                     <div class='moves'>
@@ -90,13 +154,13 @@
                         </div>
                     </div>
                     <div class='moves red-text'>
-                        Start timer/Restart timer
+                        Start the game/Restart timer
                         <div class='keys'>
                             T
                         </div>
                     </div>
                     <div class='moves red-text'>
-                        Start the game
+                        Enter the game
                         <div class='keys'>
                             ENTER
                         </div>
@@ -123,7 +187,7 @@
                     <h3>Settings</h3>
                     <label>Improve perfomance
                         <input class='checkbox' id='shadows' type="checkbox" disabled="disabled">
-                         <span class="checkmark"></span>
+                        <span class="checkmark"></span>
                     </label>
                     <label><img id='volume-off' src="/images/volume-off.png"> Mute sounds
                         <input class='checkbox' id='volume' type="checkbox" disabled="disabled">
@@ -160,6 +224,12 @@
     </div>
 
     <div id='pause'>PAUSED (PRESS ENTER TO PLAY)</div>
+
+
+
+    <script>
+        // Your web app's Firebase configuration
+    </script>
 </body>
 
 </html>

@@ -36,6 +36,7 @@ let empty = new Audio('sounds/empty.wav')
 let targetHit = new Audio('sounds/target.wav')
 let horn = new Audio('sounds/horn.mp3')
 let finish = new Audio('sounds/finish.wav')
+let cheers = new Audio('sounds/cheers.mp3')
 let ready = new Audio('sounds/ready.wav')
 let go = new Audio('sounds/go.wav')
 let pewpew = new Audio('sounds/pewpew.mp3')
@@ -48,7 +49,7 @@ let warning3 = new Audio('sounds/warning3.mp3')
 let warnings = [warning1, warning2, warning3]
 
 
-let audios = [shotAudio, reloadAudio, empty, targetHit, horn, finish, ready, go, pewpew, peace, warning1, warning2, warning3]
+let audios = [shotAudio, reloadAudio, empty, targetHit, horn, finish, cheers, ready, go, pewpew, peace, warning1, warning2, warning3]
 pewpew.loop = true;
 peace.loop = true;
 
@@ -78,6 +79,9 @@ let ammo = 7;
 
 let loadingManager = null;
 let RESOURCES_LOADED = false;
+
+let bestScores;
+let name = 'Anonymous';
 
 const models = {
     gun: {
@@ -205,9 +209,90 @@ const objects = {};
 //set up initial target count
 let targetsLeft = 5
 
+//set up frebase database
+var firebaseConfig = {
+    apiKey: "AIzaSyBWw-QoW1LUSXWOUqUeBA5G9XkqfSYB0xs",
+    authDomain: "pewpew-4b6b0.firebaseapp.com",
+    databaseURL: "https://pewpew-4b6b0.firebaseio.com",
+    projectId: "pewpew-4b6b0",
+    storageBucket: "pewpew-4b6b0.appspot.com",
+    messagingSenderId: "855740447109",
+    appId: "1:855740447109:web:97f19680c8d81df80d6cec",
+    measurementId: "G-N741DE8YK8"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
+function getData() {
+    return firebase.database().ref('/').once('value').then(function (snapshot) {
+        let val;
+        snapshot.forEach(element => {
+            val = element.val();
+        })
+        return Object.values(val);
+    })
+}
+
+function setData(scores) {
+    return firebase.database().ref('/').set({
+        scores
+    });
+}
+
+function readBestScoresInMenu(scores){
+    for (let i = 0; i < 10; i++) {
+        document.getElementById(`leaderboard-time-${i}`).innerHTML = printTime(scores[i][1]);
+        document.getElementById(`leaderboard-time-${i}-name`).innerHTML = scores[i][0];
+    }
+}
+
+function setBestScores(score) {
+    getData().then((scores) => {
+        bestScores = scores;
+        for (let i = 0; i < bestScores.length; i++) {
+
+            if (!(bestScores[i][1] === score && bestScores[i][0] === name)) {
+                if (score < bestScores[i][1] || bestScores[i][1] === 0) {
+                    if (name.length > 0) {
+                        bestScores.splice(i, 0, [name, score]);
+                    } else {
+                        bestScores.splice(i, 0, ['Anonymous', score]);
+                    }
+
+                    setData(bestScores.slice(0, 10));
+
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
+    })
+}
+
+function resetDatabase(){
+    let newScores = []
+    let score = ["Not set",0]
+    while(newScores.length !== 10){
+        newScores.push(score);
+    }
+
+    setData(newScores);
+}
+
+
+document.getElementById('nickname').addEventListener('change', e=>{
+    name = e.currentTarget.value;
+})
 //main initiazlie function
 function init() {
+    // resetDatabase();
+
+    getData().then(scores => {
+            bestScores = scores;
+            readBestScoresInMenu(scores)
+        }
+    )
 
     //unmute all the sounds and set up the volume to the 0.4
     unmute();
@@ -510,7 +595,7 @@ function init() {
 
     })
     //fires whenever the controller is locked
-    controls.addEventListener('lock', function () {
+    controls.addEventListener('lock', () => {
 
         playing = true;
         document.getElementById('pause').style.display = 'none';
@@ -578,6 +663,7 @@ function init() {
                     document.getElementById('play-area').style.display = 'none';
                     controls.unlock()
                     document.getElementById('loading').style.display = "block";
+                    getData().then(scores => readBestScoresInMenu(scores))
                     pause = false;
                     break;
                 case 38: // up
@@ -659,6 +745,7 @@ function init() {
                                         pewpew.pause();
                                         pewpew.currentTime = 0;
                                         finish.play();
+                                        cheers.play();
                                     } else {
                                         timer += (10 / 1000)
                                         timer.toPrecision(2);
@@ -996,6 +1083,7 @@ function collision(bullet) {
                     timerWaiting = false;
                 }, 3000)
                 finish.play();
+                cheers.play();
                 if (record === 0) {
                     record = timer
                     document.getElementById('record').innerHTML = printTime(record)
@@ -1005,6 +1093,11 @@ function collision(bullet) {
                         document.getElementById('record').innerHTML = printTime(record)
                     }
                 }
+                setBestScores(record)
+                setBestScores(timer)
+
+                
+
             }
 
             const index = collidableMeshListTargets.indexOf(collisionResults[0].object);

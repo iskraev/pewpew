@@ -13,7 +13,7 @@ PewPew is the FPS(First Person Shooter) game where the main goal is to take down
 
 The main page contains logo, instructions/loading window, about us/rules link and the settings. Using JavaScript's 'onprogress' and THREE.js's loading manager, the loading bar updates on every single model load.
 
-![Main page](https://i.imgur.com/9Y530dl.png) 
+![Main page](https://i.imgur.com/b4pEf9R.png) 
 
 
 # Initializing the game
@@ -227,7 +227,36 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
 # Sounds Effects
 
-There are plenty of sound effets in the game. Some of them are made by me using Ableton Live. Two main soundtracks ('Peace', 'PewPew') are produced and recorded by me in Ableton Live as well.
+There are plenty of sound effects in the game. Some of them are made by me using Ableton Live. Two main soundtracks ('Peace', 'PewPew') are produced and recorded by me in Ableton Live as well.
+
+# Leaderboard
+
+Using `Google Firebase`, the data is extracted from the database and then printed on the leaderboard.
+
+![leaderboard](https://i.imgur.com/vahMdi9.png)
+
+- Get data
+    ``` javascript
+    function getData() {
+        return firebase.database().ref('/').once('value').then(function (snapshot) {
+            let val;
+            snapshot.forEach(element => {
+                val = element.val();
+            })
+            return Object.values(val);
+        })
+    }
+    ```
+- Set data
+    ``` javascript
+    function setData(scores) {
+        return firebase.database().ref('/').set({
+            scores
+        });
+    }
+    ```
+
+
 
 # Hosting
 

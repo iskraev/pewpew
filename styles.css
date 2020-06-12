@@ -121,20 +121,23 @@ html {
 }
 
 #loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     border: 2px solid white;
     border-radius: 15px;
     color: white;
     width: 35%;
-    height: 70%;
+    height: 80%;
     background-color: rgb(83, 83, 83);
-    padding-bottom: 30px;
+    /* padding-bottom: 30px; */
 }
 
 #instructions {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    height: 80%;
+    height: 70%;
 }
 
 #instructions>h2 {
@@ -145,7 +148,7 @@ html {
 .moves {
     display: flex;
     justify-content: space-between;
-    width: 70%;
+    width: 80%;
     margin: auto;
 }
 
@@ -155,13 +158,16 @@ html {
 }
 
 #loading-bar {
-    height: 90px;
+    /* height: 90px; */
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     width: 80%;
 }
-
+#loading-bar h2{
+    margin: 0;
+    padding: 0;
+}
 #loading-percent {
     color: rgb(0, 255, 0);
     font-size: 2rem;
@@ -201,7 +207,6 @@ p {
 
 #record-box {
     font-size: 1.5vw;
-    height: 8%;
     width: 18%;
     border: 2px solid rgb(255, 45, 45);
     color: white;
@@ -358,4 +363,83 @@ input[type=checkbox] {
     width: 25px;
     background-color: yellow !important;
     border-radius: 50%;
+}
+
+#nickname{
+    width: 30%;
+    padding: 5px 10px;
+    user-select: none;
+    outline: none;
+    font-family: 'Fredoka One',
+    cursive;
+    cursor: url('./images/favicon-32x32.png'),
+    default;
+    overflow: hidden;
+    font-size: 1.5vw;
+    text-align: center;
+    background-color: rgb(39, 39, 39);
+    border: 1px solid white;
+    border-radius: 2px;
+    color: white;
+    letter-spacing: 1.5px;
+
+    transition: border 0.5s, background-color 0.5s, color 0.5s, border-radius 0.5s;
+
+}
+
+#nickname:focus{
+    user-select: none;
+    color: black;
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 10px;
+     transition: border 0.5s,
+     background-color 0.5s,
+     color 0.5s,
+     border-radius 0.5s;
+}
+.nickname{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: large;
+}
+.leaderboard{
+    font-size: 1.5vw;
+    text-align: center;
+    padding: 1vw;
+    background-color: rgba(46, 46, 46, 0.493);
+    border-radius: 10px;
+    color: white;
+    text-shadow: 0 0 8px black;
+}
+
+.leaderboard h2{
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1vw;
+}
+.leaderboard > div{
+    display: flex;
+}
+.leaderboard-number {
+    width: 2vw;
+}
+.leaderboard-name{
+    display: inline-block;
+    width: 8vw;
+    color: white;
+    text-align: center;
+}
+#logo-div{
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#record-box > p{
+    padding: 1vw;
 }
