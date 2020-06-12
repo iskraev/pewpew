@@ -364,7 +364,13 @@ function init() {
 
         //change loading bar and start animation
         RESOURCES_LOADED = true;
-        document.getElementById('loading-bar').innerHTML = '<h2>Press <span style="color: rgb(0, 255, 0);">ENTER</span> to start</h2>';
+        document.getElementById('loading-bar').innerHTML = '<h2 id="start-game"><span style="color: rgb(0, 255, 0);">PLAY</span></h2>';
+        
+        document.getElementById('start-game').addEventListener('click',()=>{
+            document.dispatchEvent(new KeyboardEvent('keydown', {
+                keyCode: 13
+            }));
+        })
         onResourcesLoaded();
         animate();
     }
@@ -582,13 +588,12 @@ function init() {
                 camera.add(smoke)
                 allowShot = false
 
-            } else {
-                if (reload) {
-                    empty.pause();
-                    empty.currentTime = 0;
-                    empty.play()
-                }
+            }
 
+            if(ammo === 0){
+                document.dispatchEvent(new KeyboardEvent('keydown', {
+                    keyCode: 82
+                }));
             }
 
         }
@@ -719,6 +724,7 @@ function init() {
                     break;
                 case 84:
                     if (!timerWaiting) {
+                        document.getElementsByClassName('press-t')[0].style = "display: none;"
                         peace.pause();
                         clearTargets()
                         ready.play();
@@ -744,6 +750,7 @@ function init() {
 
                                         pewpew.pause();
                                         pewpew.currentTime = 0;
+                                        document.getElementsByClassName('press-t')[0].style = "display: block;"
                                         finish.play();
                                         cheers.play();
                                     } else {
@@ -1083,6 +1090,7 @@ function collision(bullet) {
                     timerWaiting = false;
                 }, 3000)
                 finish.play();
+                document.getElementsByClassName('press-t')[0].style = "display: block;"
                 cheers.play();
                 if (record === 0) {
                     record = timer
