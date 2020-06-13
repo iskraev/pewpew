@@ -211,14 +211,14 @@ let targetsLeft = 5
 
 //set up frebase database
 var firebaseConfig = {
-    apiKey: "AIzaSyBWw-QoW1LUSXWOUqUeBA5G9XkqfSYB0xs",
-    authDomain: "pewpew-4b6b0.firebaseapp.com",
-    databaseURL: "https://pewpew-4b6b0.firebaseio.com",
-    projectId: "pewpew-4b6b0",
-    storageBucket: "pewpew-4b6b0.appspot.com",
-    messagingSenderId: "855740447109",
-    appId: "1:855740447109:web:97f19680c8d81df80d6cec",
-    measurementId: "G-N741DE8YK8"
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    databaseURL: process.env.DATABASE_URL,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID,
+    measurementId: process.env.MEASUREMENT_ID
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
