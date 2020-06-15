@@ -190,6 +190,14 @@ The game was developed using THREE.js library. Main `init()` function sets up al
 
     ![Target](https://i.imgur.com/JQzOKVh.png)
 
+    ```javascript
+    targets.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 5; i++) {
+        scene.add(targets[i])
+        collidableMeshListTargets.push(targets[i])
+    }
+    ```
+
 
 # Settings
 
